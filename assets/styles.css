@@ -95,5 +95,140 @@ input[type="search"] {
 .empty { color: var(--muted); padding: .5rem 0 2rem; }
 .hidden { display: none; }
 
+/* =========================
+   Motion preferences
+   ========================= */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* =========================
+   Page enter/exit transitions
+   ========================= */
+@keyframes page-fade-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes page-fade-out {
+  from { opacity: 1; transform: translateY(0); }
+  to   { opacity: 0; transform: translateY(6px); }
+}
+
+/* apply on first paint */
+body {
+  animation: page-fade-in 320ms cubic-bezier(.2,.7,.2,1) both;
+}
+
+/* optional exit effect when navigating away (triggered via a helper class in JS) */
+body.is-exiting {
+  animation: page-fade-out 220ms ease both;
+}
+
+/* =========================
+   Card fade-in + hover lift
+   ========================= */
+@keyframes card-appear {
+  from { opacity: 0; transform: translateY(8px) scale(.98); }
+  to   { opacity: 1; transform: translateY(0)   scale(1); }
+}
+
+.posts-list .card {
+  opacity: 0;                    /* start hidden; revealed via .is-ready */
+  transform: translateY(8px) scale(.98);
+  transition: transform 220ms cubic-bezier(.2,.7,.2,1), 
+              box-shadow 220ms cubic-bezier(.2,.7,.2,1);
+  will-change: transform;
+  border-radius: 12px;           /* slightly round for playful feel */
+}
+
+/* reveal animation once content is loaded */
+.posts-list.is-ready .card {
+  animation: card-appear 420ms cubic-bezier(.16,.84,.44,1) both;
+}
+
+/* add a tiny stagger (playful, still professional) */
+.posts-list.is-ready .card:nth-child(1) { animation-delay: 40ms; }
+.posts-list.is-ready .card:nth-child(2) { animation-delay: 90ms; }
+.posts-list.is-ready .card:nth-child(3) { animation-delay: 140ms; }
+.posts-list.is-ready .card:nth-child(4) { animation-delay: 190ms; }
+.posts-list.is-ready .card:nth-child(n+5) { animation-delay: 220ms; }
+
+/* hover lift */
+.card:hover, .card:focus-within {
+  transform: translateY(-3px) scale(1.01);
+  box-shadow: 0 10px 22px rgba(0,0,0,.08), 0 4px 10px rgba(0,0,0,.06);
+}
+
+/* =========================
+   Button micro-interaction
+   ========================= */
+.btn {
+  transition: transform 160ms ease, box-shadow 160ms ease, background-color 160ms ease, color 160ms ease;
+}
+.btn:hover, .btn:focus-visible {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 16px rgba(0,0,0,.08);
+}
+
+/* =========================
+   Animated dark-mode toggle
+   ========================= */
+#themeToggle {
+  display: inline-grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  transition: transform 220ms ease, background-color 220ms ease;
+}
+
+/* subtle playful bounce on click (JS toggles .is-toggling) */
+@keyframes toggle-bounce {
+  0%   { transform: scale(1) rotate(0deg);   }
+  40%  { transform: scale(.9) rotate(-12deg); }
+  70%  { transform: scale(1.06) rotate(10deg);}
+  100% { transform: scale(1) rotate(0deg);    }
+}
+#themeToggle.is-toggling {
+  animation: toggle-bounce 420ms cubic-bezier(.2,.7,.2,1);
+}
+
+/* optional: icon color shift between themes for extra flair */
+:root       #themeToggle { background: radial-gradient(100% 100% at 20% 20%, #fff 0%, #f4f6ff 100%); }
+:root[data-theme="dark"] #themeToggle { background: radial-gradient(100% 100% at 20% 20%, #272b36 0%, #141821 100%); color: #ffd66b; }
+
+/* =========================
+   Playful yet professional touches
+   ========================= */
+
+/* Slight gradient in hero for depth */
+.hero {
+  background: linear-gradient(180deg, rgba(125, 167, 255, .08) 0%, rgba(125, 167, 255, 0) 60%);
+  border-radius: 14px;
+  padding: clamp(1rem, 2.5vw, 2rem);
+}
+
+/* Elevate the brand subtly on hover */
+.brand {
+  transition: transform 180ms ease;
+}
+.brand:hover { transform: translateY(-1px); }
+
+/* Tag chips animate in */
+@keyframes tag-pop {
+  from { opacity: 0; transform: translateY(6px) scale(.96); }
+  to   { opacity: 1; transform: translateY(0)   scale(1); }
+}
+.tags .tag {
+  animation: tag-pop 260ms ease both;
+}
+
 .error { color: #ef4444; }
+
 ``
