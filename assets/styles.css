@@ -232,3 +232,121 @@ body.is-exiting {
 .error { color: #ef4444; }
 
 ``
+/* =========================
+   Seasonal Effects (playful + pro)
+   ========================= */
+
+/* Respect motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .seasonal, .seasonal * {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* Common container (fixed, pointer-events none so UI remains clickable) */
+#seasonal-layer {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9998;
+}
+
+/* ---------- Snow ---------- */
+.snowflake {
+  position: absolute;
+  top: -2rem;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, #fff, rgba(255,255,255,.6));
+  opacity: .9;
+  filter: drop-shadow(0 0 6px rgba(255,255,255,.6));
+  animation: fall var(--fall, 10s) linear var(--delay, 0s) infinite;
+}
+@keyframes fall {
+  0%   { transform: translate3d(var(--x, 0),  -2rem, 0) rotate(0deg); }
+  100% { transform: translate3d(calc(var(--x, 0) + var(--drift, 0px)), 110vh, 0) rotate(360deg); }
+}
+
+/* ---------- Leaves ---------- */
+.leaf {
+  position: absolute;
+  top: -2rem;
+  width: 16px; height: 16px;
+  background: radial-gradient(ellipse at 30% 30%, #d97706, #92400e);
+  border-radius: 2px 10px 2px 10px;
+  transform: rotate(20deg);
+  opacity: .95;
+  filter: drop-shadow(0 2px 2px rgba(0,0,0,.2));
+  animation: leaf-fall var(--fall, 12s) linear var(--delay, 0s) infinite;
+}
+:root[data-theme="dark"] .leaf {
+  background: radial-gradient(ellipse at 30% 30%, #f59e0b, #b45309);
+}
+@keyframes leaf-fall {
+  0%   { transform: translate3d(var(--x, 0), -2rem, 0) rotate(0deg); }
+  50%  { transform: translate3d(calc(var(--x, 0) + 40px), 55vh, 0) rotate(180deg); }
+  100% { transform: translate3d(calc(var(--x, 0) + 80px), 110vh, 0) rotate(360deg); }
+}
+
+/* ---------- Fireflies (subtle glowing dots) ---------- */
+#fireflies {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9998;
+}
+.firefly {
+  position: absolute;
+  width: 3px; height: 3px;
+  border-radius: 50%;
+  background: #ffd166;
+  box-shadow: 0 0 8px #ffd166, 0 0 14px rgba(255,209,102,.6);
+  opacity: .9;
+  animation:
+    fly var(--fly, 12s) ease-in-out var(--delay, 0s) infinite,
+    pulse 2.4s ease-in-out infinite alternate;
+}
+@keyframes fly {
+  0%   { transform: translate3d(var(--x0, 0), var(--y0, 0), 0); }
+  50%  { transform: translate3d(var(--x1, 40px), var(--y1, 60px), 0); }
+  100% { transform: translate3d(var(--x2, 0), var(--y2, 0), 0); }
+}
+@keyframes pulse {
+  0% { opacity: .6; box-shadow: 0 0 4px #ffd166, 0 0 10px rgba(255,209,102,.5); }
+  100% { opacity: 1; box-shadow: 0 0 10px #ffd166, 0 0 16px rgba(255,209,102,.8); }
+}
+
+/* ---------- Confetti (burst once on special days) ---------- */
+.confetti {
+  position: absolute;
+  width: 6px; height: 10px;
+  border-radius: 2px;
+  opacity: .95;
+  will-change: transform;
+  animation: confetti-fall var(--fall, 900ms) ease-out forwards;
+}
+@keyframes confetti-fall {
+  0%   { transform: translate3d(var(--x, 0), var(--y, 0), 0) rotate(0deg); }
+  100% { transform: translate3d(var(--xEnd, 0), calc(var(--y, 0) + 200px), 0) rotate(300deg); }
+}
+
+/* ---------- Settings badge (toggle) ---------- */
+#seasonal-toggle {
+  position: fixed;
+  right: 12px; bottom: 12px;
+  z-index: 9999;
+  pointer-events: auto;
+  background: var(--card);
+  color: var(--fg);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: .45rem .7rem;
+  font-size: .85rem;
+  text-decoration: none;
+  box-shadow: 0 6px 16px rgba(0,0,0,.08);
+  transition: transform 160ms ease, background 160ms ease, color 160ms ease;
+}
+#seasonal-toggle:hover { transform: translateY(-1px); }
+
