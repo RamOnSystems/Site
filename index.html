@@ -6,13 +6,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="description" content="Practical IT articles: fixes, troubleshooting, and how‑tos." />
 
-  <!-- Optional, but don't point to example.com in production -->
+  <!-- 👇 This makes all relative links resolve under /Site/ -->
+  <base href="/Site/">
+
+  <!-- Optional: when you're ready, point these to your real URLs -->
   <!-- <link rel="canonical" href="https://ramonsystems.github.io/Site/" /> -->
-  <!-- Open Graph tags: update to your real URLs or remove for now -->
   <!-- <meta property="og:url" content="https://ramonsystems.github.io/Site/" /> -->
   <!-- <meta property="og:image" content="https://ramonsystems.github.io/Site/assets/og-image.png" /> -->
 
-  <!-- If your assets folder is inside /Site/, relative path works -->
+  <!-- Assets live in /Site/assets/, so this relative path works with the <base> above -->
   <link rel="stylesheet" href="assets/styles.css" />
   <link rel="icon" href="data:,">
 </head>
@@ -66,7 +68,7 @@
     document.getElementById('year').textContent = new Date().getFullYear();
 
     // --- Load posts ---
-    // If your posts.json is under /Site/assets/, this relative URL is correct:
+    // With <base href="/Site/">, this points to /Site/assets/posts.json
     const postsUrl = 'assets/posts.json';
 
     const postsListEl = document.getElementById('postsList');
@@ -100,7 +102,8 @@
       const set = new Set();
       posts.forEach(p => p.tags.forEach(t => set.add(t)));
       const sorted = Array.from(set).sort((a,b) => a.localeCompare(b));
-      tagsEl.innerHTML = `<a href="#" class="tag ${!activeTag ? 'active' : ''}" data-tag="">All</a>` +
+      tagsEl.innerHTML =
+        `<a href="#" class="tag ${!activeTag ? 'active' : ''}" data-tag="">All</a>` +
         sorted.map(t => `<a href="#" class="tag ${activeTag===t?'active':''}" data-tag="${t}">${t}</a>`).join('');
     }
 
@@ -137,6 +140,7 @@
       try {
         const res = await fetch(postsUrl, { cache: 'no-cache' });
         ALL_POSTS = await res.json();
+        // Sort newest first
         ALL_POSTS.sort((a,b) => new Date(b.date) - new Date(a.date));
         renderTags(ALL_POSTS);
         filterPosts();
