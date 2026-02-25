@@ -71,8 +71,7 @@
 
       // Play bounce animation
       themeToggle.classList.remove('is-toggling');
-      // Reflow to restart animation
-      themeToggle.offsetHeight;
+      themeToggle.offsetHeight; // reflow to restart animation
       themeToggle.classList.add('is-toggling');
     });
 
@@ -91,7 +90,7 @@
     });
 
     /* =====================================================
-       #3 — SEASONAL EFFECTS GENERATOR (auto by month + toggle)
+       #3 — SEASONAL EFFECTS GENERATOR (snow now includes Feb & Mar)
     ===================================================== */
     (function seasonalEffects(){
       const layer = document.getElementById('seasonal-layer');
@@ -121,12 +120,12 @@
         if (nowOn) renderForMonth(new Date());
       });
 
-      // Month → effect
+      // Month → effect (❄️ now includes Feb & Mar)
       function getSeasonFromDate(d) {
         const m = d.getMonth(); // 0..11
-        if (m === 11 || m === 0)  return 'snow';      // Dec, Jan
-        if (m === 9  || m === 10) return 'leaves';    // Oct, Nov
-        if (m >= 5 && m <= 7)     return 'fireflies'; // Jun–Aug
+        if (m === 11 || m === 0 || m === 1 || m === 2) return 'snow';       // Dec–Mar
+        if (m === 9  || m === 10)                      return 'leaves';     // Oct–Nov
+        if (m >= 5 && m <= 7)                           return 'fireflies'; // Jun–Aug
         return 'none';
       }
 
@@ -179,7 +178,6 @@
         for (let i=0;i<count;i++){
           const ff = document.createElement('div');
           ff.className = 'firefly';
-          // Random flight triangle
           ff.style.left = Math.random()*100 + 'vw';
           ff.style.top  = Math.random()*100 + 'vh';
           ff.style.setProperty('--x0', '0px');
