@@ -4,26 +4,26 @@
     "title": "Hello, RamOn Systems",
     "date": "2026-02-25",
     "tags": ["meta", "welcome"],
-    "path": "posts/hello-world.html",
     "excerpt": "Welcome to my IT notes—quick fixes, hard‑won lessons, and scripts.",
-    "keywords": "welcome,intro,about,ramon"
+    "keywords": "welcome,intro,about,ramon",
+    "content": "<p>Welcome to <strong>RamOn Systems</strong> — my running log of fixes, scripts, and troubleshooting notes.</p><p>This site is where I document solutions so I never need to solve the same problem twice.</p><p>More posts coming soon!</p>"
   },
   {
     "slug": "fix-printer",
     "title": "Windows: Printer Stuck in Queue? Try This First",
     "date": "2026-02-24",
     "tags": ["windows", "printing", "troubleshooting"],
-    "path": "posts/fix-printer.html",
     "excerpt": "When jobs won’t clear, here’s the fastest path to a working printer.",
-    "keywords": "spooler,print queue,fix,services,cmd"
+    "keywords": "spooler,print queue,fix,services,cmd",
+    "content": "<p>If your printer is stuck in queue, here is the fastest fix:</p><ol><li>Open <code>services.msc</code>.</li><li>Stop the <strong>Print Spooler</strong> service.</li><li>Go to <code>C:\\Windows\\System32\\spool\\PRINTERS</code></li><li>Delete all files in that folder.</li><li>Start the <strong>Print Spooler</strong> service again.</li></ol><p>Most queue issues are resolved instantly after clearing the spool files.</p>"
   },
   {
     "slug": "about",
     "title": "About RamOn Systems",
     "date": "2026-02-20",
     "tags": ["meta"],
-    "path": "posts/about.html",
     "excerpt": "What this site is, who I am, and how to contact me.",
-    "keywords": "about,contact,ramon"
+    "keywords": "about,contact,ramon",
+    "content": "<p><strong>RamOn Systems</strong> is my running log of fixes and how‑tos. I’m Ramon—into pragmatic sysadmin/devops problem‑solving, clean scripts, and writing it down so I don’t have to remember it twice.</p><p>Contact: <a href='mailto:you@example.com'>you@example.com</a></p>"
   }
 ]
