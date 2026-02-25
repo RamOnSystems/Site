@@ -5,12 +5,14 @@
   <title>RamOn Systems — IT Fixes & How‑Tos</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="description" content="Practical IT articles: fixes, troubleshooting, and how‑tos." />
-  <link rel="canonical" href="https://example.com/" />
-  <meta property="og:title" content="RamOn Systems — IT Fixes & How‑Tos" />
-  <meta property="og:description" content="Practical IT articles: fixes, troubleshooting, and how‑tos." />
-  <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://example.com/" />
-  <meta property="og:image" content="https://example.com/og-image.png" />
+
+  <!-- Optional, but don't point to example.com in production -->
+  <!-- <link rel="canonical" href="https://ramonsystems.github.io/Site/" /> -->
+  <!-- Open Graph tags: update to your real URLs or remove for now -->
+  <!-- <meta property="og:url" content="https://ramonsystems.github.io/Site/" /> -->
+  <!-- <meta property="og:image" content="https://ramonsystems.github.io/Site/assets/og-image.png" /> -->
+
+  <!-- If your assets folder is inside /Site/, relative path works -->
   <link rel="stylesheet" href="assets/styles.css" />
   <link rel="icon" href="data:,">
 </head>
@@ -64,7 +66,9 @@
     document.getElementById('year').textContent = new Date().getFullYear();
 
     // --- Load posts ---
+    // If your posts.json is under /Site/assets/, this relative URL is correct:
     const postsUrl = 'assets/posts.json';
+
     const postsListEl = document.getElementById('postsList');
     const emptyStateEl = document.getElementById('emptyState');
     const tagsEl = document.getElementById('tags');
@@ -133,7 +137,6 @@
       try {
         const res = await fetch(postsUrl, { cache: 'no-cache' });
         ALL_POSTS = await res.json();
-        // Sort newest first
         ALL_POSTS.sort((a,b) => new Date(b.date) - new Date(a.date));
         renderTags(ALL_POSTS);
         filterPosts();
@@ -142,3 +145,7 @@
         console.error(err);
       }
     }
+    init();
+  </script>
+</body>
+</html>
