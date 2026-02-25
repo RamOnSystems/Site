@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title id="pageTitle">Post — RamOn Systems</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" id="pageDesc" content="IT article" />
+  <link rel="stylesheet" href="assets/styles.css" />
+  <link rel="icon" href="data:,">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-grid">
+      <a class="brand" href="./">RamOn <span class="brand-accent">Systems</span></a>
+      <nav class="top-nav">
+        <a href="./">Home</a>
+        <button id="themeToggle" class="btn ghost" aria-label="Toggle dark mode">☾</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <article id="post" class="post">
+      <header class="post-header">
+        <h1 id="postTitle">Loading…</h1>
+        <div class="card-meta" id="postMeta"></div>
+      </header>
+      <div id="postBody" class="post-body">Please wait…</div>
+    </article>
+    <hr />
+    <nav class="post-nav">
+      <a class="btn" href="./">← Back to all posts</a>
+    </nav>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p>© <span id="year"></span> RamOn Systems.</p>
+    </div>
+  </footer>
+
+  <script>
+    // Theme
+    const themeToggle = document.getElementById('themeToggle');
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme) document.documentElement.dataset.theme = savedTheme;
+    themeToggle.addEventListener('click', () => {
+      const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+      document.documentElement.dataset.theme = next;
+      localStorage.setItem('theme', next);
+    });
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Load post
+    const params = new URLSearchParams(location.search);
+    const slug = params.get('slug');
+
+    async function loadPost() {
+      if (!slug) {
+        document.getElementById('postBody').textContent = 'No post specified.';
+        return;
+      }
+      try {
+        const listRes = await fetch('assets/posts.json', { cache: 'no-cache' });
+        const posts = await listRes.json();
+        const postMeta = posts.find(p => p.slug === slug);
+        if (!postMeta) {
+          document.getElementById('postBody').textContent = 'Post not found.';
+          return;
+        }
+        // Set meta
+        document.getElementById('postTitle').textContent = postMeta.title;
+        document.getElementById('pageTitle').textContent = `${postMeta.title} — RamOn Systems`;
+        document.getElementById('pageDesc').setAttribute('content', postMeta.excerpt);
+        document.getElementById('postMeta').innerHTML =
+          `<time datetime="${postMeta.date}">${new Date(postMeta.date).toLocaleDateString()}</time>
+           ${postMeta.tags.map(t => `<span class="tag">${t}</span>`).join('')}`;
+
+        // Load HTML body
+        const res = await fetch(postMeta.path, { cache: 'no-cache' });
+        const html = await res.text();
+        document.getElementById('postBody').innerHTML = html;
+      } catch (e) {
+        document.getElementById('postBody').textContent = 'Error loading post.';
+        console.error(e);
+      }
+    }
+    loadPost();
+  </script>
+</body>
+</html>

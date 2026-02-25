@@ -1,0 +1,17 @@
+<h2>Symptoms</h2>
+<ul>
+  <li>Print jobs stuck in “Queued” or “Deleting”.</li>
+  <li>Restarting the app doesn’t help.</li>
+</ul>
+
+<h2>Quick Fix (Windows)</h2>
+<ol>
+  <li>Press <kbd>Win</kbd> + <kbd>R</kbd>, type <code>services.msc</code>, press Enter.</li>
+  <li>Find <strong>Print Spooler</strong> → Right‑click → <em>Restart</em>.</li>
+  <li>Clear the queue folder: open <code>%systemroot%\\System32\\spool\\PRINTERS</code> and delete files.</li>
+</ol>
+
+<h2>One‑liner (Run as Admin)</h2>
+<pre><code>net stop spooler &amp; del /q %systemroot%\System32\spool\PRINTERS\* &amp; net start spooler</code></pre>
+
+<p><em>Tip:</em> If it keeps happening, update the printer driver and check port settings.</p>
