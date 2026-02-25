@@ -5,6 +5,11 @@
   <title id="pageTitle">Post — RamOn Systems</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="description" id="pageDesc" content="IT article" />
+
+  <!-- ✅ Make all relative links resolve under /Site/ -->
+  <base href="/Site/">
+
+  <!-- Assets live in /Site/assets/ -->
   <link rel="stylesheet" href="assets/styles.css" />
   <link rel="icon" href="data:,">
 </head>
@@ -56,32 +61,39 @@
     const slug = params.get('slug');
 
     async function loadPost() {
+      const bodyEl = document.getElementById('postBody');
       if (!slug) {
-        document.getElementById('postBody').textContent = 'No post specified.';
+        bodyEl.textContent = 'No post specified.';
         return;
       }
       try {
+        // With <base href="/Site/"> this resolves to /Site/assets/posts.json
         const listRes = await fetch('assets/posts.json', { cache: 'no-cache' });
         const posts = await listRes.json();
         const postMeta = posts.find(p => p.slug === slug);
         if (!postMeta) {
-          document.getElementById('postBody').textContent = 'Post not found.';
+          bodyEl.textContent = 'Post not found.';
           return;
         }
+
         // Set meta
         document.getElementById('postTitle').textContent = postMeta.title;
         document.getElementById('pageTitle').textContent = `${postMeta.title} — RamOn Systems`;
-        document.getElementById('pageDesc').setAttribute('content', postMeta.excerpt);
+        if (postMeta.excerpt) {
+          document.getElementById('pageDesc').setAttribute('content', postMeta.excerpt);
+        }
         document.getElementById('postMeta').innerHTML =
           `<time datetime="${postMeta.date}">${new Date(postMeta.date).toLocaleDateString()}</time>
-           ${postMeta.tags.map(t => `<span class="tag">${t}</span>`).join('')}`;
+           ${Array.isArray(postMeta.tags) ? postMeta.tags.map(t => `<span class="tag">${t}</span>`).join('') : ''}`;
 
-        // Load HTML body
-        const res = await fetch(postMeta.path, { cache: 'no-cache' });
-        const html = await res.text();
-        document.getElementById('postBody').innerHTML = html;
+        // ✅ Use inline HTML content from posts.json (no external .html files)
+        if (postMeta.content) {
+          bodyEl.innerHTML = postMeta.content;
+        } else {
+          bodyEl.textContent = 'No content for this post.';
+        }
       } catch (e) {
-        document.getElementById('postBody').textContent = 'Error loading post.';
+        bodyEl.textContent = 'Error loading post.';
         console.error(e);
       }
     }
