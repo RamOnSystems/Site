@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="description" content="Practical IT articles: fixes, troubleshooting, and how‑tos." />
 
-  <!-- ✅ IMPORTANT: make all relative URLs resolve under /Site/ -->
+  <!-- Make all relative URLs resolve under /Site/ -->
   <base href="/Site/">
 
   <!-- Assets live in /Site/assets/ -->
@@ -47,6 +47,10 @@
   </footer>
 
   <script>
+    // --- Version for cache-busting ---
+    // Bump this when you change posts.json or front-end code
+    const VERSION = 'v1.0.0';
+
     // --- Simple dark mode toggle ---
     const themeToggle = document.getElementById('themeToggle');
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
@@ -63,8 +67,8 @@
     document.getElementById('year').textContent = new Date().getFullYear();
 
     // --- Load posts ---
-    // With <base href="/Site/"> this resolves to /Site/assets/posts.json
-    const postsUrl = 'assets/posts.json';
+    // With <base href="/Site/"> this resolves to /Site/assets/posts.json?v=...
+    const postsUrl = `assets/posts.json?${VERSION}`;
 
     const postsListEl = document.getElementById('postsList');
     const emptyStateEl = document.getElementById('emptyState');
@@ -97,7 +101,8 @@
       const set = new Set();
       posts.forEach(p => p.tags.forEach(t => set.add(t)));
       const sorted = Array.from(set).sort((a,b) => a.localeCompare(b));
-      tagsEl.innerHTML = `<a href="#" class="tag ${!activeTag ? 'active' : ''}" data-tag="">All</a>` +
+      tagsEl.innerHTML =
+        `<a href="#" class="tag ${!activeTag ? 'active' : ''}" data-tag="">All</a>` +
         sorted.map(t => `<a href="#" class="tag ${activeTag===t?'active':''}" data-tag="${t}">${t}</a>`).join('');
     }
 
