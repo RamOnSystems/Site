@@ -14,6 +14,7 @@
   <link rel="icon" href="data:,">
 </head>
 <body>
+  <!-- HEADER -->
   <header class="site-header">
     <div class="container header-grid">
       <a class="brand" href="./">RamOn <span class="brand-accent">Systems</span></a>
@@ -24,6 +25,7 @@
     </div>
   </header>
 
+  <!-- MAIN -->
   <main class="container">
     <article id="post" class="post">
       <header class="post-header">
@@ -38,6 +40,7 @@
     </nav>
   </main>
 
+  <!-- FOOTER -->
   <footer class="site-footer">
     <div class="container">
       <p>© <span id="year"></span> RamOn Systems.</p>
@@ -45,21 +48,46 @@
   </footer>
 
   <script>
-    // --- Version for cache-busting ---
+    /* =====================================================
+       VERSION (cache-busting)
+    ===================================================== */
     const VERSION = 'v1.0.0';
 
-    // Theme
+    /* =====================================================
+       THEME TOGGLE + ANIMATED BUTTON (same as index)
+    ===================================================== */
     const themeToggle = document.getElementById('themeToggle');
     const savedTheme = localStorage.getItem('theme');
     if (savedTheme) document.documentElement.dataset.theme = savedTheme;
+
     themeToggle.addEventListener('click', () => {
       const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
       document.documentElement.dataset.theme = next;
       localStorage.setItem('theme', next);
+
+      // Play bounce animation
+      themeToggle.classList.remove('is-toggling');
+      themeToggle.offsetHeight; // reflow to restart animation
+      themeToggle.classList.add('is-toggling');
     });
+
     document.getElementById('year').textContent = new Date().getFullYear();
 
-    // Load post
+    /* =====================================================
+       OPTIONAL: PAGE EXIT ANIMATION (matches index)
+    ===================================================== */
+    document.addEventListener('click', (e) => {
+      const a = e.target.closest('a[href]');
+      if (!a) return;
+      const url = new URL(a.href, location.href);
+      if (url.origin === location.origin) {
+        document.body.classList.add('is-exiting');
+      }
+    });
+
+    /* =====================================================
+       LOAD POST
+    ===================================================== */
     const params = new URLSearchParams(location.search);
     const slug = params.get('slug');
 
