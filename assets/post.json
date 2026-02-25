@@ -1,0 +1,29 @@
+[
+  {
+    "slug": "hello-world",
+    "title": "Hello, RamOn Systems",
+    "date": "2026-02-25",
+    "tags": ["meta", "welcome"],
+    "path": "posts/hello-world.html",
+    "excerpt": "Welcome to my IT notes—quick fixes, hard‑won lessons, and scripts.",
+    "keywords": "welcome,intro,about,ramon"
+  },
+  {
+    "slug": "fix-printer",
+    "title": "Windows: Printer Stuck in Queue? Try This First",
+    "date": "2026-02-24",
+    "tags": ["windows", "printing", "troubleshooting"],
+    "path": "posts/fix-printer.html",
+    "excerpt": "When jobs won’t clear, here’s the fastest path to a working printer.",
+    "keywords": "spooler,print queue,fix,services,cmd"
+  },
+  {
+    "slug": "about",
+    "title": "About RamOn Systems",
+    "date": "2026-02-20",
+    "tags": ["meta"],
+    "path": "posts/about.html",
+    "excerpt": "What this site is, who I am, and how to contact me.",
+    "keywords": "about,contact,ramon"
+  }
+]
