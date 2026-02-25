@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>RamOn Systems — IT Fixes & How‑Tos</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Practical IT articles: fixes, troubleshooting, and how‑tos." />
+  <link rel="canonical" href="https://example.com/" />
+  <meta property="og:title" content="RamOn Systems — IT Fixes & How‑Tos" />
+  <meta property="og:description" content="Practical IT articles: fixes, troubleshooting, and how‑tos." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://example.com/" />
+  <meta property="og:image" content="https://example.com/og-image.png" />
+  <link rel="stylesheet" href="assets/styles.css" />
+  <link rel="icon" href="data:,">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-grid">
+      <a class="brand" href="./">RamOn <span class="brand-accent">Systems</span></a>
+      <nav class="top-nav">
+        <a href="./">Home</a>
+        <a href="post.html?slug=about">About</a>
+        <button id="themeToggle" class="btn ghost" aria-label="Toggle dark mode">☾</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="hero">
+      <h1>IT Issues, Solved.</h1>
+      <p class="sub">Straightforward guides, fixes, and notes from the trenches.</p>
+
+      <div class="controls">
+        <input id="searchInput" type="search" placeholder="Search posts (e.g., 'printer', 'DNS', 'Windows 11')" aria-label="Search posts" />
+        <div id="tags" class="tags"></div>
+      </div>
+    </section>
+
+    <section id="postsList" class="posts-list" aria-live="polite"></section>
+    <div id="emptyState" class="empty hidden">No posts match your search.</div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p>© <span id="year"></span> RamOn Systems. Built with HTML, CSS, and vanilla JS.</p>
+    </div>
+  </footer>
+
+  <script>
+    // --- Simple dark mode toggle ---
+    const themeToggle = document.getElementById('themeToggle');
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme) document.documentElement.dataset.theme = savedTheme;
+    else if (prefersDark) document.documentElement.dataset.theme = 'dark';
+
+    themeToggle.addEventListener('click', () => {
+      const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+      document.documentElement.dataset.theme = next;
+      localStorage.setItem('theme', next);
+    });
+
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // --- Load posts ---
+    const postsUrl = 'assets/posts.json';
+    const postsListEl = document.getElementById('postsList');
+    const emptyStateEl = document.getElementById('emptyState');
+    const tagsEl = document.getElementById('tags');
+    const searchInput = document.getElementById('searchInput');
+
+    let ALL_POSTS = [];
+    let activeTag = null;
+    let query = '';
+
+    function postCard(p) {
+      return `
+        <article class="card">
+          <div class="card-body">
+            <div class="card-meta">
+              <time datetime="${p.date}">${new Date(p.date).toLocaleDateString()}</time>
+              ${p.tags.map(t => `<a href="#" class="tag" data-tag="${t}">${t}</a>`).join('')}
+            </div>
+            <h2 class="card-title"><a href="post.html?slug=${encodeURIComponent(p.slug)}">${p.title}</a></h2>
+            <p class="card-excerpt">${p.excerpt}</p>
+            <div class="card-actions">
+              <a class="btn" href="post.html?slug=${encodeURIComponent(p.slug)}">Read</a>
+            </div>
+          </div>
+        </article>
+      `;
+    }
+
+    function renderTags(posts) {
+      const set = new Set();
+      posts.forEach(p => p.tags.forEach(t => set.add(t)));
+      const sorted = Array.from(set).sort((a,b) => a.localeCompare(b));
+      tagsEl.innerHTML = `<a href="#" class="tag ${!activeTag ? 'active' : ''}" data-tag="">All</a>` +
+        sorted.map(t => `<a href="#" class="tag ${activeTag===t?'active':''}" data-tag="${t}">${t}</a>`).join('');
+    }
+
+    function filterPosts() {
+      let list = [...ALL_POSTS];
+      if (activeTag) list = list.filter(p => p.tags.includes(activeTag));
+      if (query.trim()) {
+        const q = query.toLowerCase();
+        list = list.filter(p =>
+          p.title.toLowerCase().includes(q) ||
+          p.excerpt.toLowerCase().includes(q) ||
+          (p.keywords || '').toLowerCase().includes(q)
+        );
+      }
+      postsListEl.innerHTML = list.map(postCard).join('');
+      emptyStateEl.classList.toggle('hidden', list.length > 0);
+    }
+
+    tagsEl.addEventListener('click', (e) => {
+      const tag = e.target.closest('[data-tag]');
+      if (!tag) return;
+      activeTag = tag.dataset.tag || null;
+      renderTags(ALL_POSTS);
+      filterPosts();
+      e.preventDefault();
+    });
+
+    searchInput.addEventListener('input', (e) => {
+      query = e.target.value;
+      filterPosts();
+    });
+
+    async function init() {
+      try {
+        const res = await fetch(postsUrl, { cache: 'no-cache' });
+        ALL_POSTS = await res.json();
+        // Sort newest first
+        ALL_POSTS.sort((a,b) => new Date(b.date) - new Date(a.date));
+        renderTags(ALL_POSTS);
+        filterPosts();
+      } catch (err) {
+        postsListEl.innerHTML = `<p class="error">Could not load posts. Check <code>assets/posts.json</code>.</p>`;
+        console.error(err);
+      }
+    }
