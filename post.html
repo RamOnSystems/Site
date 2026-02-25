@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="description" id="pageDesc" content="IT article" />
 
-  <!-- ✅ IMPORTANT: make all relative URLs resolve under /Site/ -->
+  <!-- Make all relative URLs resolve under /Site/ -->
   <base href="/Site/">
 
   <!-- Assets -->
@@ -45,6 +45,9 @@
   </footer>
 
   <script>
+    // --- Version for cache-busting ---
+    const VERSION = 'v1.0.0';
+
     // Theme
     const themeToggle = document.getElementById('themeToggle');
     const savedTheme = localStorage.getItem('theme');
@@ -67,8 +70,8 @@
         return;
       }
       try {
-        // With <base href="/Site/"> this resolves to /Site/assets/posts.json
-        const listRes = await fetch('assets/posts.json', { cache: 'no-cache' });
+        // Force a fresh JSON fetch with VERSION
+        const listRes = await fetch(`assets/posts.json?${VERSION}`, { cache: 'no-cache' });
         const posts = await listRes.json();
         const postMeta = posts.find(p => p.slug === slug);
         if (!postMeta) {
@@ -86,7 +89,7 @@
           `<time datetime="${postMeta.date}">${new Date(postMeta.date).toLocaleDateString()}</time>
            ${Array.isArray(postMeta.tags) ? postMeta.tags.map(t => `<span class="tag">${t}</span>`).join('') : ''}`;
 
-        // ✅ Use inline HTML content from posts.json
+        // Use inline HTML content from posts.json
         if (postMeta.content) {
           bodyEl.innerHTML = postMeta.content;
         } else {
