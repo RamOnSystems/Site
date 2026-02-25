@@ -7,13 +7,15 @@
   <meta name="description" content="Practical IT articles: fixes, troubleshooting, and how‑tos." />
 
   <!-- Make all relative URLs resolve under /Site/ -->
-  <base href="/Site/">
+  /Site/
 
-  <!-- Assets live in /Site/assets/ -->
-  <link rel="stylesheet" href="assets/styles.css" />
-  <link rel="icon" href="data:,">
+  <!-- Assets -->
+  assets/styles.css
+  data:,
 </head>
 <body>
+
+  <!-- HEADER -->
   <header class="site-header">
     <div class="container header-grid">
       <a class="brand" href="./">RamOn <span class="brand-accent">Systems</span></a>
@@ -25,6 +27,7 @@
     </div>
   </header>
 
+  <!-- MAIN -->
   <main class="container">
     <section class="hero">
       <h1>IT Issues, Solved.</h1>
@@ -40,21 +43,28 @@
     <div id="emptyState" class="empty hidden">No posts match your search.</div>
   </main>
 
+  <!-- FOOTER -->
   <footer class="site-footer">
     <div class="container">
       <p>© <span id="year"></span> RamOn Systems. Built with HTML, CSS, and vanilla JS.</p>
     </div>
   </footer>
 
+
+  <!-- SCRIPT -->
   <script>
-    // --- Version for cache-busting ---
-    // Bump this when you change posts.json or front-end code
+    /* =====================================================
+       VERSION (cache-busting)
+    ===================================================== */
     const VERSION = 'v1.0.0';
 
-    // --- Simple dark mode toggle ---
+    /* =====================================================
+       THEME TOGGLE + ANIMATED BUTTON
+    ===================================================== */
     const themeToggle = document.getElementById('themeToggle');
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
     const savedTheme = localStorage.getItem('theme');
+
     if (savedTheme) document.documentElement.dataset.theme = savedTheme;
     else if (prefersDark) document.documentElement.dataset.theme = 'dark';
 
@@ -62,14 +72,20 @@
       const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
       document.documentElement.dataset.theme = next;
       localStorage.setItem('theme', next);
+
+      /* Play bounce animation */
+      themeToggle.classList.remove('is-toggling');
+      themeToggle.offsetHeight; 
+      themeToggle.classList.add('is-toggling');
     });
 
     document.getElementById('year').textContent = new Date().getFullYear();
 
-    // --- Load posts ---
-    // With <base href="/Site/"> this resolves to /Site/assets/posts.json?v=...
-    const postsUrl = `assets/posts.json?${VERSION}`;
 
+    /* =====================================================
+       LOAD POSTS
+    ===================================================== */
+    const postsUrl = `assets/posts.json?${VERSION}`;
     const postsListEl = document.getElementById('postsList');
     const emptyStateEl = document.getElementById('emptyState');
     const tagsEl = document.getElementById('tags');
@@ -101,6 +117,7 @@
       const set = new Set();
       posts.forEach(p => p.tags.forEach(t => set.add(t)));
       const sorted = Array.from(set).sort((a,b) => a.localeCompare(b));
+
       tagsEl.innerHTML =
         `<a href="#" class="tag ${!activeTag ? 'active' : ''}" data-tag="">All</a>` +
         sorted.map(t => `<a href="#" class="tag ${activeTag===t?'active':''}" data-tag="${t}">${t}</a>`).join('');
@@ -117,7 +134,12 @@
           (p.keywords || '').toLowerCase().includes(q)
         );
       }
+
       postsListEl.innerHTML = list.map(postCard).join('');
+
+      /* Trigger fade + stagger animation */
+      postsListEl.classList.add('is-ready');
+
       emptyStateEl.classList.toggle('hidden', list.length > 0);
     }
 
@@ -148,6 +170,21 @@
       }
     }
     init();
+
+
+    /* =====================================================
+       OPTIONAL: PAGE EXIT ANIMATION
+    ===================================================== */
+    document.addEventListener('click', (e) => {
+      const a = e.target.closest('a[href]');
+      if (!a) return;
+
+      const url = new URL(a.href, location.href);
+      if (url.origin === location.origin) {
+        document.body.classList.add('is-exiting');
+      }
+    });
+
   </script>
 </body>
 </html>
