@@ -6,10 +6,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="description" id="pageDesc" content="IT article" />
 
-  <!-- ✅ Make all relative links resolve under /Site/ -->
+  <!-- ✅ IMPORTANT: make all relative URLs resolve under /Site/ -->
   <base href="/Site/">
 
-  <!-- Assets live in /Site/assets/ -->
+  <!-- Assets -->
   <link rel="stylesheet" href="assets/styles.css" />
   <link rel="icon" href="data:,">
 </head>
@@ -86,7 +86,7 @@
           `<time datetime="${postMeta.date}">${new Date(postMeta.date).toLocaleDateString()}</time>
            ${Array.isArray(postMeta.tags) ? postMeta.tags.map(t => `<span class="tag">${t}</span>`).join('') : ''}`;
 
-        // ✅ Use inline HTML content from posts.json (no external .html files)
+        // ✅ Use inline HTML content from posts.json
         if (postMeta.content) {
           bodyEl.innerHTML = postMeta.content;
         } else {
