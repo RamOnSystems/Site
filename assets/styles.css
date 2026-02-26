@@ -326,14 +326,24 @@ body.is-exiting {
   }
 }
 /* ============================================================
-   PREMIUM DROPDOWN NAVIGATION
+   PREMIUM DROPDOWN NAVIGATION (FIXED)
    ============================================================ */
 
-.dropdown {
-  position: relative;
-  display: inline-block;
+/* Align dropdown properly inside navbar */
+.top-nav > a,
+.top-nav > .dropdown {
+  display: flex;
+  align-items: center;
 }
 
+/* Container */
+.dropdown {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+/* Toggle */
 .dropdown-toggle {
   cursor: pointer;
   display: inline-flex;
@@ -343,7 +353,7 @@ body.is-exiting {
   transition: color 160ms ease;
 }
 
-/* Small arrow indicator */
+/* Arrow */
 .dropdown-toggle::after {
   content: "▾";
   font-size: 0.7rem;
@@ -351,8 +361,7 @@ body.is-exiting {
   transition: transform 200ms ease;
 }
 
-/* Rotate arrow when open (mobile click) */
-.dropdown-menu.show + .dropdown-toggle::after,
+/* Rotate arrow when open */
 .dropdown-toggle[aria-expanded="true"]::after {
   transform: rotate(180deg);
 }
@@ -399,7 +408,7 @@ body.is-exiting {
   color: var(--accent);
 }
 
-/* Desktop hover */
+/* Desktop hover support */
 @media (hover: hover) and (pointer: fine) {
   .dropdown:hover .dropdown-menu {
     opacity: 1;
@@ -497,11 +506,5 @@ body.is-exiting {
   border-radius: 999px;
 }
 
-/* Desktop hover support */
-@media (min-width: 769px) {
-  .dropdown:hover .dropdown-menu {
-    display: block;
-    animation: fadeInDown 200ms ease forwards;
-  }
-}
+
 
