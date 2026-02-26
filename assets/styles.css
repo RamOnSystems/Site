@@ -370,6 +370,7 @@ body.is-exiting {
   transform: translateY(0);
   pointer-events: auto;
 }
+
 /* ============================================================
    FEATURED POST
    ============================================================ */
@@ -414,4 +415,5 @@ body.is-exiting {
   font-size: 1rem;
   padding: .6rem 1rem;
 }
+
 
