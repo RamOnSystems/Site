@@ -11,7 +11,83 @@
 
   <!-- Assets -->
   <link rel="stylesheet" href="assets/styles.css" />
-  <link rel="icon" href="data:,">
+  <link rel="icon" href="assets/favicon.png">
+
+  <!-- ===== Terminal (CLI) styles — scoped and lightweight ===== -->
+  <style>
+    /* Only affects the About page when terminal is rendered */
+    .terminal {
+      background: #0d1117;
+      color: #e6edf3;
+      border-radius: 10px;
+      overflow: hidden;
+      margin: 2rem auto;
+      max-width: 800px;
+      box-shadow: 0 10px 30px rgba(0,0,0,.35);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+    }
+    .terminal-header {
+      background: #161b22;
+      padding: .5rem 1rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border-bottom: 1px solid #0b1320;
+    }
+    .terminal-header .circle { width: 12px; height: 12px; border-radius: 50%; display:inline-block; }
+    .terminal-header .circle.red { background:#ff5f56; }
+    .terminal-header .circle.yellow { background:#ffbd2e; }
+    .terminal-header .circle.green { background:#27c93f; }
+    .terminal-header .title { margin-left:auto; color:#8b949e; font-size:.85rem; }
+
+    .terminal-body {
+      padding: 1.25rem;
+      line-height: 1.6;
+      min-height: 320px;
+    }
+
+    .term-line { margin: .15rem 0; white-space: pre-wrap; word-break: break-word; }
+    .term-line.cmd { color:#7ee787; font-weight:700; }
+    .term-line.out { color:#e6edf3; }
+    .term-line.muted { color:#8b949e; }
+
+    .terminal-input {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: .5rem;
+      align-items: center;
+      padding: .75rem 1rem 1.25rem;
+      border-top: 1px dashed #30363d;
+      background: #0d1117;
+    }
+    .terminal-input .prompt {
+      color:#7ee787;
+      font-weight:700;
+      user-select:none;
+    }
+    .terminal-input input[type="text"] {
+      background: #0b1020;
+      color: #e6edf3;
+      border: 1px solid #30363d;
+      border-radius: 6px;
+      padding: .55rem .7rem;
+      outline: none;
+      width: 100%;
+    }
+    .terminal-input input[type="text"]::placeholder { color:#6e7681; }
+    .terminal-input input[type="text"]:focus { border-color:#2563eb; box-shadow: 0 0 0 3px rgba(37,99,235,.25); }
+
+    .terminal a { color:#58a6ff; text-decoration: underline; }
+    .terminal .k { color:#a5d6ff; } /* light key color for inline flags */
+
+    /* Optional CRT-ish subtle glow */
+    .terminal.crt .terminal-body { text-shadow: 0 0 .6px rgba(230,237,243,.35); }
+    @media (prefers-reduced-motion: reduce) {
+      .term-line { transition: none !important; }
+    }
+    /* Keep the About page header tidy */
+    .post-header .card-meta:empty { display:none; }
+  </style>
 </head>
 <body>
   <!-- Seasonal effects layer + toggle -->
@@ -90,20 +166,17 @@
     });
 
     /* =====================================================
-       #3 — SEASONAL EFFECTS GENERATOR (snow now includes Feb & Mar)
+       SEASONAL EFFECTS GENERATOR (same as your last version)
     ===================================================== */
     (function seasonalEffects(){
       const layer = document.getElementById('seasonal-layer');
       const toggle = document.getElementById('seasonal-toggle');
       if (!layer || !toggle) return;
 
-      // Respect reduced motion
       const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-      // User setting
       const KEY = 'seasonalEffects';
       let enabled = localStorage.getItem(KEY);
-      if (enabled === null) enabled = 'on'; // default on
+      if (enabled === null) enabled = 'on';
       const setEnabled = (on) => {
         enabled = on ? 'on' : 'off';
         localStorage.setItem(KEY, enabled);
@@ -111,7 +184,6 @@
       };
       setEnabled(enabled === 'on');
 
-      // Toggle
       toggle.addEventListener('click', (e) => {
         e.preventDefault();
         const nowOn = enabled !== 'on';
@@ -120,7 +192,6 @@
         if (nowOn) renderForMonth(new Date());
       });
 
-      // Month → effect (❄️ now includes Feb & Mar)
       function getSeasonFromDate(d) {
         const m = d.getMonth(); // 0..11
         if (m === 11 || m === 0 || m === 1 || m === 2) return 'snow';       // Dec–Mar
@@ -129,7 +200,6 @@
         return 'none';
       }
 
-      // Special days for confetti (month/day). Customize!
       const SPECIAL = [
         { m: 1, d: 1 },  // Feb 1 (example)
         { m: 5, d: 1 },  // Jun 1
@@ -139,7 +209,6 @@
         return SPECIAL.some(s => s.m === (d.getMonth()+1) && s.d === d.getDate());
       }
 
-      // Renderers
       function renderSnow() {
         const count = 60;
         const frag = document.createDocumentFragment();
@@ -201,7 +270,7 @@
           c.className = 'confetti';
           c.style.background = colors[i % colors.length];
           const startX = (window.innerWidth/2) + (Math.random()*40 - 20);
-          const startY = 60; // near top
+          const startY = 60;
           c.style.left = startX + 'px';
           c.style.top  = startY + 'px';
 
@@ -230,7 +299,6 @@
         }
       }
 
-      // If Jun–Aug, repaint around evening/morning boundaries (18:00/06:00)
       function maybeNightRepaint() {
         const now = new Date();
         const isSummer = now.getMonth() >= 5 && now.getMonth() <= 7;
@@ -240,19 +308,186 @@
         }
       }
 
-      // Initial paint + interval check
       renderForMonth(new Date());
       setInterval(maybeNightRepaint, 60 * 60 * 1000);
     })();
 
     /* =====================================================
-       LOAD POST
+       LOAD POST (CLI for slug=about, default for others)
     ===================================================== */
     const params = new URLSearchParams(location.search);
     const slug = params.get('slug');
 
+    function renderAboutTerminal() {
+      // Titles & description
+      const title = 'About — RamOn Systems';
+      document.getElementById('postTitle').textContent = 'About Me (CLI)';
+      document.getElementById('pageTitle').textContent = `${title}`;
+      document.getElementById('pageDesc').setAttribute('content', 'Ramon — IT Specialist & Systems Troubleshooter');
+
+      // Build terminal UI
+      const bodyEl = document.getElementById('postBody');
+      bodyEl.innerHTML = `
+        <section class="terminal crt" aria-label="About me terminal">
+          <div class="terminal-header">
+            <span class="circle red"></span>
+            <span class="circle yellow"></span>
+            <span class="circle green"></span>
+            <span class="title">ramon@ramonsystems:~</span>
+          </div>
+          <div class="terminal-body" id="terminalOutput" aria-live="polite" aria-relevant="additions text">
+            <div class="term-line muted">Type <strong>help</strong> for commands. ↑/↓ for history.</div>
+          </div>
+          <form id="terminalForm" class="terminal-input" autocomplete="off">
+            <label class="prompt" for="cli"><span class="user">ramon</span>@<span class="host">ramonsystems</span>:~$</label>
+            <input id="cli" type="text" inputmode="text" autocapitalize="off" autocomplete="off" spellcheck="false" placeholder="whoami">
+          </form>
+        </section>
+      `;
+
+      // Terminal logic
+      const out = document.getElementById('terminalOutput');
+      const form = document.getElementById('terminalForm');
+      const input = document.getElementById('cli');
+
+      const history = [];
+      let hIndex = -1;
+
+      const siteUrl = location.origin + '/Site/';
+      const email = 'contact@ramonsystems.nl';
+      const website = 'ramonsystems.nl';
+
+      function printCmd(cmd) {
+        const div = document.createElement('div');
+        div.className = 'term-line cmd';
+        div.textContent = `$ ${cmd}`;
+        out.appendChild(div);
+      }
+      function print(text, cls='out') {
+        const div = document.createElement('div');
+        div.className = `term-line ${cls}`;
+        if (typeof text === 'string') div.innerHTML = text;
+        else div.appendChild(text);
+        out.appendChild(div);
+      }
+      function scrollBottom() {
+        out.parentElement.scrollTop = out.parentElement.scrollHeight;
+      }
+
+      function help() {
+        return [
+          '<span class="k">help</span>               Show available commands',
+          '<span class="k">whoami</span>             About the human behind RamOn Systems',
+          '<span class="k">about --summary</span>    One-paragraph summary',
+          '<span class="k">skills</span>             Key technical skills',
+          '<span class="k">mission</span>            What I care about',
+          '<span class="k">contact</span>            How to reach me',
+          '<span class="k">site</span>               Open homepage',
+          '<span class="k">clear</span>              Clear the screen',
+          '<span class="k">exit</span>               Return to posts'
+        ].join('<br>');
+      }
+
+      function run(cmdRaw) {
+        const cmd = cmdRaw.trim();
+        printCmd(cmd);
+        if (!cmd) { scrollBottom(); return; }
+
+        const [base, ...rest] = cmd.split(/\s+/);
+        const args = rest.join(' ');
+
+        switch (base.toLowerCase()) {
+          case 'help':
+            print(help());
+            break;
+
+          case 'whoami':
+            print('Ramon — ICT Specialist & systems troubleshooter. I like clean, reliable, fast systems and practical fixes that save time.');
+            break;
+
+          case 'about':
+            if (/--summary/i.test(args)) {
+              print('I keep networks and endpoints healthy, automate the boring stuff with PowerShell, and write concise guides so others can fix issues quickly.');
+            } else {
+              print('Usage: <span class="k">about --summary</span>');
+            }
+            break;
+
+          case 'skills':
+            print([
+              '• Windows troubleshooting & internals',
+              '• Networking & connectivity diagnostics',
+              '• PowerShell scripting & automation',
+              '• Endpoint management and hardening',
+              '• Hardware diagnostics',
+              '• Process cleanup & predictable operations'
+            ].join('<br>'));
+            break;
+
+          case 'mission':
+            print('Ship fast, practical, no‑fluff guides that get people unblocked immediately — with repeatable steps and clear trade‑offs.');
+            break;
+
+          case 'contact':
+            print(`Website: <a href="https://${website}" target="_blank" rel="noopener">https://${website}</a><br>Email: <a href="mailto:${email}">${email}</a>`);
+            break;
+
+          case 'site':
+            print(`Opening <a href="${siteUrl}">${siteUrl}</a> ...`);
+            window.open(siteUrl, '_self');
+            break;
+
+          case 'clear':
+            out.innerHTML = '';
+            break;
+
+          case 'exit':
+            print('Session terminated.');
+            setTimeout(() => { window.location.href = './'; }, 250);
+            break;
+
+          default:
+            print(`Command not found: <strong>${base}</strong>. Try <span class="k">help</span>.`);
+        }
+        scrollBottom();
+      }
+
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const v = input.value;
+        history.push(v);
+        hIndex = history.length;
+        run(v);
+        input.value = '';
+        input.focus();
+      });
+
+      input.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowUp') {
+          if (hIndex > 0) hIndex--;
+          if (history[hIndex] !== undefined) input.value = history[hIndex];
+          e.preventDefault();
+        } else if (e.key === 'ArrowDown') {
+          if (hIndex < history.length) hIndex++;
+          input.value = history[hIndex] ?? '';
+          e.preventDefault();
+        }
+      });
+
+      // MOTD
+      print('Welcome to RamOn Systems terminal. Type <strong>help</strong> to explore.', 'muted');
+      input.focus();
+    }
+
     async function loadPost() {
       const bodyEl = document.getElementById('postBody');
+
+      // Special-case the About page: render the CLI terminal
+      if (slug && slug.toLowerCase() === 'about') {
+        renderAboutTerminal();
+        return;
+      }
+
       if (!slug) {
         bodyEl.textContent = 'No post specified.';
         return;
