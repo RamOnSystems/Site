@@ -21,11 +21,8 @@
 * { box-sizing: border-box; }
 html, body { margin: 0; padding: 0; }
 
-/* 📌 CHANGE: prevent any horizontal scrollbar at the root */
-html, body {
-  max-width: 100%;
-  overflow-x: hidden;
-}
+/* 📌 ensure nothing can create a horizontal scrollbar */
+html, body { max-width: 100%; overflow-x: hidden; }
 
 body {
   font-family: system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial, sans-serif;
@@ -38,17 +35,15 @@ body {
 .site-header { border-bottom: 1px solid var(--border); background: var(--bg); position: sticky; top: 0; z-index: 10; }
 .header-grid { display: flex; align-items: center; justify-content: space-between; padding: .75rem 0; }
 
-/* 📌 CHANGE: allow flex children to shrink and not blow out width */
-.header-grid, .top-nav, .card, .card-body {
-  min-width: 0;
-}
+/* 📌 allow flex/grid children to shrink; avoids min-content blowout */
+.header-grid, .top-nav, .card, .card-body { min-width: 0; }
 
 .brand { font-weight: 800; text-decoration: none; color: var(--fg); font-size: 1.25rem; letter-spacing: .2px; }
 .brand-accent { color: var(--accent); }
 .top-nav a, .top-nav button { margin-left: .75rem; color: var(--fg); text-decoration: none; }
 .top-nav a:hover { color: var(--accent); }
 
-/* 📌 CHANGE: allow nav to wrap instead of forcing wide single line (mobile safety) */
+/* 📌 nav can wrap on narrow screens instead of forcing overflow */
 .top-nav { display: flex; flex-wrap: wrap; gap: .5rem; }
 
 .hero { padding: 1.25rem 0 0.5rem; }
@@ -89,7 +84,7 @@ input[type="search"] {
 .post { padding: 1rem 0 2rem; }
 .post-header h1 { margin: .3rem 0 .4rem; }
 
-/* 📌 CHANGE: ensure media never exceeds container width */
+/* 📌 ensure media/inline content never exceeds its container */
 img, svg, video, canvas { max-width: 100%; height: auto; display: block; }
 
 .post-body img, .post-body pre, .post-body code { max-width: 100%; }
@@ -251,8 +246,6 @@ body.is-exiting {
 
 .error { color: #ef4444; }
 
-/* (Removed stray `` line that could break the next section) */
-
 /* =========================
    Seasonal Effects (playful + pro)
    ========================= */
@@ -265,24 +258,27 @@ body.is-exiting {
   }
 }
 
-/* 📌 CHANGE: clip the seasonal layer so its children can't cause horizontal scroll */
+/* 📌 the critical fix: fixed + clipping + stacking context */
 #seasonal-layer {
   position: fixed;
   inset: 0;
+  overflow: hidden;       /* clip drifting particles */
   pointer-events: none;
-  z-index: 0;          /* keep it behind the main content */
-  overflow: hidden;    /* <-- the key fix */
+  z-index: 9998;          /* restore its own stacking context */
+  display: block;
 }
 
-/* Make sure content paints above the seasonal layer */
-.site-header, main, .site-footer {
-  position: relative;
-  z-index: 1;
-}
+/* 📌 force all seasonal children to be absolutely positioned inside the layer */
+#seasonal-layer .snowflake,
+#seasonal-layer .leaf,
+#seasonal-layer .firefly,
+#seasonal-layer .confetti { position: absolute !important; }
+
+/* Make sure the app content sits above the seasonal layer visually if desired */
+.site-header, main, .site-footer { position: relative; z-index: 1; }
 
 /* ---------- Snow ---------- */
 .snowflake {
-  position: absolute;
   top: -2rem;
   width: 6px;
   height: 6px;
@@ -299,7 +295,6 @@ body.is-exiting {
 
 /* ---------- Leaves ---------- */
 .leaf {
-  position: absolute;
   top: -2rem;
   width: 16px; height: 16px;
   background: radial-gradient(ellipse at 30% 30%, #d97706, #92400e);
@@ -319,15 +314,13 @@ body.is-exiting {
 }
 
 /* ---------- Fireflies ---------- */
-/* Keep this inside the seasonal layer’s clipping */
+/* 📌 absolute inside the clipping layer (not fixed to viewport) */
 #fireflies {
-  position: absolute;  /* absolute inside #seasonal-layer */
+  position: absolute;
   inset: 0;
   pointer-events: none;
-  z-index: 0;
 }
 .firefly {
-  position: absolute;
   width: 3px; height: 3px;
   border-radius: 50%;
   background: #ffd166;
@@ -349,7 +342,6 @@ body.is-exiting {
 
 /* ---------- Confetti ---------- */
 .confetti {
-  position: absolute;
   width: 6px; height: 10px;
   border-radius: 2px;
   opacity: .95;
@@ -365,7 +357,7 @@ body.is-exiting {
 #seasonal-toggle {
   position: fixed;
   right: 12px; bottom: 12px;
-  z-index: 10;        /* above content, below modals if any */
+  z-index: 9999;
   pointer-events: auto;
   background: var(--card);
   color: var(--fg);
@@ -376,5 +368,8 @@ body.is-exiting {
   text-decoration: none;
   box-shadow: 0 6px 16px rgba(0,0,0,.08);
   transition: transform 160ms ease, background 160ms ease, color 160ms ease;
+  /* 📌 defensive: ensure the toggle itself never pushes width */
+  max-width: calc(100vw - 24px);
+  overflow: hidden;
 }
 #seasonal-toggle:hover { transform: translateY(-1px); }
