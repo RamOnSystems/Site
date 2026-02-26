@@ -1,32 +1,48 @@
-
+<!doctype html>
+<html lang="en">
 <head>
   <meta charset="utf-8" />
   <title>RamOn Systems — IT Fixes & How‑Tos</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="description" content="Practical IT articles: fixes, troubleshooting, and how‑tos." />
 
-  <!-- Stylesheet -->
-  <link rel="stylesheet" href="assets/styles.css">
+  <!-- Make all relative URLs resolve under /Site/ -->
+  <!-- If your site isn't under /Site/, change or remove this line -->
+  <base href="/Site/">
 
-  <!-- Favicon -->
+  <!-- Version string for cache-busting. Keep in sync with the JS constant below -->
+  <!-- Using v=1.0.0 here because your script sets VERSION='v1.0.0' -->
+  <link rel="preload" href="assets/styles.css?v=1.0.0" as="style">
+  <link rel="stylesheet" href="assets/styles.css?v=1.0.0">
+
+  <!-- Favicon (PNG works for modern browsers) -->
   <link rel="icon" type="image/png" href="assets/favicon.png">
-  <link rel="shortcut icon" href="assets/favicon.png" type="image/png">
+  <link rel="apple-touch-icon" href="assets/favicon.png">
 
-  <!-- Windows / PWA colors -->
+  <!-- Colors for PWA/Windows tiles -->
   <meta name="theme-color" content="#0b1020">
   <meta name="msapplication-TileColor" content="#2563eb">
-</head>
 
+  <!-- Recommended SEO/Open Graph (adjust domain and og-image if you have one) -->
+  <!-- <link rel="canonical" href="https://example.com/Site/"> -->
+  <!-- <meta property="og:type" content="website"> -->
+  <!-- <meta property="og:title" content="RamOn Systems — IT Fixes & How‑Tos"> -->
+  <!-- <meta property="og:description" content="Practical IT articles: fixes, troubleshooting, and how‑tos."> -->
+  <!-- <meta property="og:url" content="https://example.com/Site/"> -->
+  <!-- <meta property="og:image" content="assets/og-image.png"> -->
+</head>
 <body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
   <!-- Seasonal effects layer + toggle -->
   <div id="seasonal-layer" class="seasonal" aria-hidden="true"></div>
-  <a id="seasonal-toggle" class="seasonal" href="#" title="Toggle seasonal effects">✨ Effects: On</a>
+  <a id="seasonal-toggle" class="seasonal" href="#" role="button" aria-pressed="true" title="Toggle seasonal effects">✨ Effects: On</a>
 
   <!-- HEADER -->
   <header class="site-header">
     <div class="container header-grid">
       <a class="brand" href="./">RamOn <span class="brand-accent">Systems</span></a>
-      <nav class="top-nav">
+      <nav class="top-nav" aria-label="Primary">
         <a href="./">Home</a>
         <a href="post.html?slug=about">About</a>
         <button id="themeToggle" class="btn ghost" aria-label="Toggle dark mode">☾</button>
@@ -35,18 +51,19 @@
   </header>
 
   <!-- MAIN -->
-  <main class="container">
+  <main id="main" class="container">
     <section class="hero">
       <h1>IT Issues, Solved.</h1>
       <p class="sub">Straightforward guides, fixes, and notes from the trenches.</p>
 
-      <div class="controls">
-        <input id="searchInput" type="search" placeholder="Search posts (e.g., 'printer', 'DNS', 'Windows 11')" aria-label="Search posts" />
-        <div id="tags" class="tags"></div>
-      </div>
+      <form class="controls" role="search" aria-label="Search posts" onsubmit="return false;">
+        <label class="visually-hidden" for="searchInput">Search posts</label>
+        <input id="searchInput" type="search" placeholder="Search posts (e.g., 'printer', 'DNS', 'Windows 11')" />
+        <div id="tags" class="tags" aria-label="Filter by tag"></div>
+      </form>
     </section>
 
-    <section id="postsList" class="posts-list" aria-live="polite"></section>
+    <section id="postsList" class="posts-list" aria-live="polite" aria-busy="false"></section>
     <div id="emptyState" class="empty hidden">No posts match your search.</div>
   </main>
 
@@ -59,15 +76,14 @@
 
   <!-- SCRIPT -->
   <script>
-    /* All your script stays the same — unchanged */
     /* =====================================================
        VERSION (cache-busting)
-    ===================================================== */
+       ===================================================== */
     const VERSION = 'v1.0.0';
 
     /* =====================================================
        THEME TOGGLE + ANIMATED BUTTON
-    ===================================================== */
+       ===================================================== */
     const themeToggle = document.getElementById('themeToggle');
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
     const savedTheme = localStorage.getItem('theme');
@@ -82,15 +98,15 @@
 
       /* Play bounce animation */
       themeToggle.classList.remove('is-toggling');
-      themeToggle.offsetHeight; 
+      void themeToggle.offsetWidth; // reflow
       themeToggle.classList.add('is-toggling');
     });
 
     document.getElementById('year').textContent = new Date().getFullYear();
 
     /* =====================================================
-       LOAD POSTS — unchanged
-    ===================================================== */
+       LOAD POSTS
+       ===================================================== */
     const postsUrl = `assets/posts.json?${VERSION}`;
     const postsListEl = document.getElementById('postsList');
     const emptyStateEl = document.getElementById('emptyState');
@@ -122,14 +138,16 @@
     function renderTags(posts) {
       const set = new Set();
       posts.forEach(p => p.tags.forEach(t => set.add(t)));
-      const sorted = Array.from(set).sort((a,b) => a.localeCompare(b));
+      const sorted = Array.from(set).sort((a, b) => a.localeCompare(b));
 
       tagsEl.innerHTML =
         `<a href="#" class="tag ${!activeTag ? 'active' : ''}" data-tag="">All</a>` +
-        sorted.map(t => `<a href="#" class="tag ${activeTag===t?'active':''}" data-tag="${t}">${t}</a>`).join('');
+        sorted.map(t => `<a href="#" class="tag ${activeTag === t ? 'active' : ''}" data-tag="${t}">${t}</a>`).join('');
     }
 
     function filterPosts() {
+      postsListEl.setAttribute('aria-busy', 'true');
+
       let list = [...ALL_POSTS];
       if (activeTag) list = list.filter(p => p.tags.includes(activeTag));
       if (query.trim()) {
@@ -142,11 +160,9 @@
       }
 
       postsListEl.innerHTML = list.map(postCard).join('');
-
-      /* Trigger fade + stagger animation */
       postsListEl.classList.add('is-ready');
-
       emptyStateEl.classList.toggle('hidden', list.length > 0);
+      postsListEl.setAttribute('aria-busy', 'false');
     }
 
     tagsEl.addEventListener('click', (e) => {
@@ -167,7 +183,7 @@
       try {
         const res = await fetch(postsUrl, { cache: 'no-cache' });
         ALL_POSTS = await res.json();
-        ALL_POSTS.sort((a,b) => new Date(b.date) - new Date(a.date));
+        ALL_POSTS.sort((a, b) => new Date(b.date) - new Date(a.date));
         renderTags(ALL_POSTS);
         filterPosts();
       } catch (err) {
@@ -179,11 +195,10 @@
 
     /* =====================================================
        OPTIONAL: PAGE EXIT ANIMATION
-    ===================================================== */
+       ===================================================== */
     document.addEventListener('click', (e) => {
       const a = e.target.closest('a[href]');
       if (!a) return;
-
       const url = new URL(a.href, location.href);
       if (url.origin === location.origin) {
         document.body.classList.add('is-exiting');
@@ -191,12 +206,9 @@
     });
 
     /* =====================================================
-       Seasonal Effects Generator — unchanged
-    ===================================================== */
-    (function seasonalEffects(){ /*... the whole function remains unchanged ...*/})();
+       Seasonal Effects Generator — (your original function)
+       ===================================================== */
+    (function seasonalEffects(){ /* ... your existing implementation ... */ })();
   </script>
 </body>
 </html>
-
-
-
