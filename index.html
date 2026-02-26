@@ -6,35 +6,21 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="description" content="Practical IT articles: fixes, troubleshooting, and how‑tos." />
 
-  <!-- Make all relative URLs resolve under /Site/ -->
-  <!-- If your site isn't under /Site/, change or remove this line -->
   <base href="/Site/">
 
-  <!-- Version string for cache-busting. Keep in sync with the JS constant below -->
-  <!-- Using v=1.0.0 here because your script sets VERSION='v1.0.0' -->
   <link rel="preload" href="assets/styles.css?v=1.0.0" as="style">
   <link rel="stylesheet" href="assets/styles.css?v=1.0.0">
 
-  <!-- Favicon (PNG works for modern browsers) -->
   <link rel="icon" type="image/png" href="assets/favicon.png">
   <link rel="apple-touch-icon" href="assets/favicon.png">
 
-  <!-- Colors for PWA/Windows tiles -->
   <meta name="theme-color" content="#0b1020">
   <meta name="msapplication-TileColor" content="#2563eb">
-
-  <!-- Recommended SEO/Open Graph (adjust domain and og-image if you have one) -->
-  <!-- <link rel="canonical" href="https://example.com/Site/"> -->
-  <!-- <meta property="og:type" content="website"> -->
-  <!-- <meta property="og:title" content="RamOn Systems — IT Fixes & How‑Tos"> -->
-  <!-- <meta property="og:description" content="Practical IT articles: fixes, troubleshooting, and how‑tos."> -->
-  <!-- <meta property="og:url" content="https://example.com/Site/"> -->
-  <!-- <meta property="og:image" content="assets/og-image.png"> -->
 </head>
+
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
 
-  <!-- Seasonal effects layer + toggle -->
   <div id="seasonal-layer" class="seasonal" aria-hidden="true"></div>
   <a id="seasonal-toggle" class="seasonal" href="#" role="button" aria-pressed="true" title="Toggle seasonal effects">✨ Effects: On</a>
 
@@ -42,9 +28,14 @@
   <header class="site-header">
     <div class="container header-grid">
       <a class="brand" href="./">RamOn <span class="brand-accent">Systems</span></a>
+
+      <!-- ✔️ Corrected navigation with Library tab -->
       <nav class="top-nav" aria-label="Primary">
-        <nav class="top-nav" aria-label="Primary"> <a href="./">Home</a> <a href="library.html">Library</a> <a href="post.html?slug=about">About</a> <button id="themeToggle" class="btn ghost" aria-label="Toggle dark mode">☾</button> 
-        </nav>
+        <a href="./">Home</a>
+        <a href="library.html">Library</a>
+        <a href="post.html?slug=about">About</a>
+        <button id="themeToggle" class="btn ghost" aria-label="Toggle dark mode">☾</button>
+      </nav>
     </div>
   </header>
 
@@ -74,14 +65,8 @@
 
   <!-- SCRIPT -->
   <script>
-    /* =====================================================
-       VERSION (cache-busting)
-       ===================================================== */
     const VERSION = 'v1.0.0';
 
-    /* =====================================================
-       THEME TOGGLE + ANIMATED BUTTON
-       ===================================================== */
     const themeToggle = document.getElementById('themeToggle');
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
     const savedTheme = localStorage.getItem('theme');
@@ -94,17 +79,13 @@
       document.documentElement.dataset.theme = next;
       localStorage.setItem('theme', next);
 
-      /* Play bounce animation */
       themeToggle.classList.remove('is-toggling');
-      void themeToggle.offsetWidth; // reflow
+      void themeToggle.offsetWidth;
       themeToggle.classList.add('is-toggling');
     });
 
     document.getElementById('year').textContent = new Date().getFullYear();
 
-    /* =====================================================
-       LOAD POSTS
-       ===================================================== */
     const postsUrl = `assets/posts.json?${VERSION}`;
     const postsListEl = document.getElementById('postsList');
     const emptyStateEl = document.getElementById('emptyState');
@@ -191,9 +172,6 @@
     }
     init();
 
-    /* =====================================================
-       OPTIONAL: PAGE EXIT ANIMATION
-       ===================================================== */
     document.addEventListener('click', (e) => {
       const a = e.target.closest('a[href]');
       if (!a) return;
@@ -203,11 +181,7 @@
       }
     });
 
-    /* =====================================================
-       Seasonal Effects Generator — (your original function)
-       ===================================================== */
     (function seasonalEffects(){ /* ... your existing implementation ... */ })();
   </script>
 </body>
 </html>
-
