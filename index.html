@@ -16,35 +16,6 @@
 
   <meta name="theme-color" content="#0b1020">
   <meta name="msapplication-TileColor" content="#2563eb">
-
-  <style>
-    /* --- MOBILE MENU TOGGLE --- */
-    .menu-toggle {
-      display: none;
-      background: none;
-      border: none;
-      font-size: 1.8rem;
-      cursor: pointer;
-      color: inherit;
-    }
-
-    @media (max-width: 768px) {
-      .menu-toggle {
-        display: block;
-      }
-
-      .top-nav {
-        display: none;
-        flex-direction: column;
-        gap: 1rem;
-        padding: 1rem 0;
-      }
-
-      .top-nav.open {
-        display: flex;
-      }
-    }
-  </style>
 </head>
 
 <body>
@@ -56,15 +27,10 @@
   <!-- HEADER -->
   <header class="site-header">
     <div class="container header-grid">
-
-      <!-- BRAND -->
       <a class="brand" href="./">RamOn <span class="brand-accent">Systems</span></a>
 
-      <!-- MOBILE MENU BUTTON -->
-      <button id="menuToggle" class="menu-toggle" aria-expanded="false" aria-label="Open menu">☰</button>
-
-      <!-- NAVIGATION -->
-      <nav id="mainNav" class="top-nav" aria-label="Primary">
+      <!-- ✔️ Corrected navigation with Library tab -->
+      <nav class="top-nav" aria-label="Primary">
         <a href="./">Home</a>
         <a href="library.html">Library</a>
         <a href="post.html?slug=about">About</a>
@@ -101,7 +67,6 @@
   <script>
     const VERSION = 'v1.0.0';
 
-    /* --- THEME TOGGLE --- */
     const themeToggle = document.getElementById('themeToggle');
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
     const savedTheme = localStorage.getItem('theme');
@@ -121,7 +86,6 @@
 
     document.getElementById('year').textContent = new Date().getFullYear();
 
-    /* --- POSTS LOADING --- */
     const postsUrl = `assets/posts.json?${VERSION}`;
     const postsListEl = document.getElementById('postsList');
     const emptyStateEl = document.getElementById('emptyState');
@@ -215,16 +179,6 @@
       if (url.origin === location.origin) {
         document.body.classList.add('is-exiting');
       }
-    });
-
-    /* --- MOBILE MENU TOGGLE JS --- */
-    const menuToggle = document.getElementById('menuToggle');
-    const mainNav = document.getElementById('mainNav');
-
-    menuToggle.addEventListener('click', () => {
-      const isOpen = mainNav.classList.toggle('open');
-      menuToggle.setAttribute('aria-expanded', isOpen);
-      menuToggle.textContent = isOpen ? '✕' : '☰';
     });
 
     (function seasonalEffects(){ /* ... your existing implementation ... */ })();
