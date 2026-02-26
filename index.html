@@ -353,24 +353,30 @@
     });
 
     /* --- LIBRARY DROPDOWN --- */
-    const libraryToggle = document.getElementById('libraryToggle');
-    const libraryMenu = document.getElementById('libraryMenu');
+const libraryToggle = document.getElementById('libraryToggle');
+const libraryMenu = document.getElementById('libraryMenu');
 
-    if (libraryToggle && libraryMenu) {
-      libraryToggle.addEventListener('click', function(e) {
-        e.preventDefault();
-        libraryMenu.classList.toggle('show');
-      });
+if (libraryToggle && libraryMenu) {
+  libraryToggle.addEventListener('click', function(e) {
+    e.preventDefault();
 
-      document.addEventListener('click', function(e) {
-        if (!libraryToggle.contains(e.target) && !libraryMenu.contains(e.target)) {
-          libraryMenu.classList.remove('show');
-        }
-      });
+    const isExpanded = libraryToggle.getAttribute('aria-expanded') === 'true';
+    libraryToggle.setAttribute('aria-expanded', !isExpanded);
+
+    libraryMenu.classList.toggle('show');
+  });
+
+  document.addEventListener('click', function(e) {
+    if (!libraryToggle.contains(e.target) && !libraryMenu.contains(e.target)) {
+      libraryMenu.classList.remove('show');
+      libraryToggle.setAttribute('aria-expanded', 'false');
     }
+  });
+}
 
     (function seasonalEffects(){ /* ... your existing implementation ... */ })();
   </script>
 </body>
 </html>
+
 
