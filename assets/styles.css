@@ -497,4 +497,11 @@ body.is-exiting {
   border-radius: 999px;
 }
 
+/* Desktop hover support */
+@media (min-width: 769px) {
+  .dropdown:hover .dropdown-menu {
+    display: block;
+    animation: fadeInDown 200ms ease forwards;
+  }
+}
 
