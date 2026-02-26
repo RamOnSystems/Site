@@ -48,4 +48,91 @@
 </section>
 
 <section id="libraryContent" class="library-content hidden"></section>
+<script>
+/* ------------------------------
+   LIBRARY CONTENT DEFINITIONS
+   ------------------------------ */
+const content = {
+  compliance: `
+    <h2>Compliance Policies</h2>
+    <p>Hier komen straks alle regels, OS‑checks, password policies en device health uitleg.</p>
+  `,
+  profiles: `
+    <h2>Configuration Profiles</h2>
+    <p>Settings catalog, templates, restrictions en voorbeelden.</p>
+  `,
+  scripts: `
+    <h2>PowerShell Scripts</h2>
+    <p>Remediation scripts, automation en best practices.</p>
+  `,
+  apps: `
+    <h2>App Deployment</h2>
+    <p>Win32 packaging, detection rules en Store apps.</p>
+  `,
+  security: `
+    <h2>Security Baselines</h2>
+    <p>Hardening templates, MDM security en best practices.</p>
+  `,
+  troubleshooting: `
+    <h2>Troubleshooting</h2>
+    <p>Logs, foutcodes, fixes en diagnostische stappen.</p>
+  `
+};
+
+/* ------------------------------
+   ELEMENT SELECTORS
+   ------------------------------ */
+const menuLinks = document.querySelectorAll('.library-menu a');
+const cards = document.querySelectorAll('.lib-card');
+const viewer = document.getElementById('libraryContent');
+
+/* ------------------------------
+   MENU → CARD + CONTENT
+   ------------------------------ */
+menuLinks.forEach(link => {
+  link.addEventListener('click', e => {
+    e.preventDefault();
+
+    const topic = link.dataset.topic;
+
+    // Menu highlight
+    menuLinks.forEach(l => l.classList.remove('active'));
+    link.classList.add('active');
+
+    // Card highlight
+    cards.forEach(c => c.classList.remove('active'));
+    const card = document.querySelector(`.lib-card[data-topic="${topic}"]`);
+    if (card) card.classList.add('active');
+
+    // Load content
+    viewer.innerHTML = content[topic];
+    viewer.classList.remove('hidden');
+    viewer.scrollIntoView({ behavior: 'smooth' });
+  });
+});
+
+/* ------------------------------
+   CARD → MENU + CONTENT
+   ------------------------------ */
+cards.forEach(card => {
+  card.addEventListener('click', () => {
+    const topic = card.dataset.topic;
+
+    // Card highlight
+    cards.forEach(c => c.classList.remove('active'));
+    card.classList.add('active');
+
+    // Menu highlight
+    menuLinks.forEach(l => l.classList.remove('active'));
+    const menuLink = document.querySelector(`.library-menu a[data-topic="${topic}"]`);
+    if (menuLink) menuLink.classList.add('active');
+
+    // Load content
+    viewer.innerHTML = content[topic];
+    viewer.classList.remove('hidden');
+    viewer.scrollIntoView({ behavior: 'smooth' });
+  });
+});
+</script>
+
 
