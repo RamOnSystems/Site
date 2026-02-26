@@ -238,7 +238,25 @@
     });
 
     (function seasonalEffects(){ /* ... your existing implementation ... */ })();
+    
+    /* --- LIBRARY DROPDOWN --- */
+const libraryToggle = document.getElementById('libraryToggle');
+const libraryMenu = document.getElementById('libraryMenu');
+
+if (libraryToggle && libraryMenu) {
+  libraryToggle.addEventListener('click', function(e) {
+    e.preventDefault();
+    libraryMenu.classList.toggle('show');
+  });
+
+  document.addEventListener('click', function(e) {
+    if (!libraryToggle.contains(e.target) && !libraryMenu.contains(e.target)) {
+      libraryMenu.classList.remove('show');
+    }
+  });
+}
   </script>
 </body>
 </html>
+
 
