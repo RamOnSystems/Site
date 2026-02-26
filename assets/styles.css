@@ -20,6 +20,13 @@
 
 * { box-sizing: border-box; }
 html, body { margin: 0; padding: 0; }
+
+/* 📌 CHANGE: prevent any horizontal scrollbar at the root */
+html, body {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
 body {
   font-family: system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial, sans-serif;
   background: var(--bg);
@@ -30,10 +37,19 @@ body {
 .container { max-width: 960px; margin: 0 auto; padding: 0 1rem; }
 .site-header { border-bottom: 1px solid var(--border); background: var(--bg); position: sticky; top: 0; z-index: 10; }
 .header-grid { display: flex; align-items: center; justify-content: space-between; padding: .75rem 0; }
+
+/* 📌 CHANGE: allow flex children to shrink and not blow out width */
+.header-grid, .top-nav, .card, .card-body {
+  min-width: 0;
+}
+
 .brand { font-weight: 800; text-decoration: none; color: var(--fg); font-size: 1.25rem; letter-spacing: .2px; }
 .brand-accent { color: var(--accent); }
 .top-nav a, .top-nav button { margin-left: .75rem; color: var(--fg); text-decoration: none; }
 .top-nav a:hover { color: var(--accent); }
+
+/* 📌 CHANGE: allow nav to wrap instead of forcing wide single line (mobile safety) */
+.top-nav { display: flex; flex-wrap: wrap; gap: .5rem; }
 
 .hero { padding: 1.25rem 0 0.5rem; }
 .hero h1 { margin: 0 0 .25rem; font-size: 1.8rem; }
@@ -72,6 +88,10 @@ input[type="search"] {
 
 .post { padding: 1rem 0 2rem; }
 .post-header h1 { margin: .3rem 0 .4rem; }
+
+/* 📌 CHANGE: ensure media never exceeds container width */
+img, svg, video, canvas { max-width: 100%; height: auto; display: block; }
+
 .post-body img, .post-body pre, .post-body code { max-width: 100%; }
 .post-body pre {
   background: var(--card);
@@ -231,7 +251,8 @@ body.is-exiting {
 
 .error { color: #ef4444; }
 
-``
+/* (Removed stray `` line that could break the next section) */
+
 /* =========================
    Seasonal Effects (playful + pro)
    ========================= */
@@ -244,12 +265,19 @@ body.is-exiting {
   }
 }
 
-/* Common container (fixed, pointer-events none so UI remains clickable) */
+/* 📌 CHANGE: clip the seasonal layer so its children can't cause horizontal scroll */
 #seasonal-layer {
   position: fixed;
   inset: 0;
   pointer-events: none;
-  z-index: 9998;
+  z-index: 0;          /* keep it behind the main content */
+  overflow: hidden;    /* <-- the key fix */
+}
+
+/* Make sure content paints above the seasonal layer */
+.site-header, main, .site-footer {
+  position: relative;
+  z-index: 1;
 }
 
 /* ---------- Snow ---------- */
@@ -290,12 +318,13 @@ body.is-exiting {
   100% { transform: translate3d(calc(var(--x, 0) + 80px), 110vh, 0) rotate(360deg); }
 }
 
-/* ---------- Fireflies (subtle glowing dots) ---------- */
+/* ---------- Fireflies ---------- */
+/* Keep this inside the seasonal layer’s clipping */
 #fireflies {
-  position: fixed;
+  position: absolute;  /* absolute inside #seasonal-layer */
   inset: 0;
   pointer-events: none;
-  z-index: 9998;
+  z-index: 0;
 }
 .firefly {
   position: absolute;
@@ -318,7 +347,7 @@ body.is-exiting {
   100% { opacity: 1; box-shadow: 0 0 10px #ffd166, 0 0 16px rgba(255,209,102,.8); }
 }
 
-/* ---------- Confetti (burst once on special days) ---------- */
+/* ---------- Confetti ---------- */
 .confetti {
   position: absolute;
   width: 6px; height: 10px;
@@ -336,7 +365,7 @@ body.is-exiting {
 #seasonal-toggle {
   position: fixed;
   right: 12px; bottom: 12px;
-  z-index: 9999;
+  z-index: 10;        /* above content, below modals if any */
   pointer-events: auto;
   background: var(--card);
   color: var(--fg);
@@ -349,4 +378,3 @@ body.is-exiting {
   transition: transform 160ms ease, background 160ms ease, color 160ms ease;
 }
 #seasonal-toggle:hover { transform: translateY(-1px); }
-
