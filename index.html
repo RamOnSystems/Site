@@ -44,93 +44,6 @@
         display: flex;
       }
     }
-
-    /* Dropdown styles */
-    .dropdown {
-      position: relative;
-      display: inline-block;
-    }
-
-    .dropdown-toggle {
-      cursor: pointer;
-      color: var(--fg);
-      text-decoration: none;
-      padding: 0.25rem 0.5rem;
-      font-weight: 500;
-      user-select: none;
-    }
-
-    .dropdown-menu {
-      display: none;
-      position: absolute;
-      top: 100%;
-      left: 0;
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 0.5rem;
-      min-width: 180px;
-      box-shadow: 0 6px 12px rgba(0,0,0,0.1);
-      z-index: 20;
-      padding: 0.25rem 0;
-    }
-
-    .dropdown-menu.show {
-      display: block;
-      animation: fadeInDown 200ms ease forwards;
-    }
-
-    .dropdown-menu a {
-      display: block;
-      padding: 0.5rem 1rem;
-      color: var(--fg);
-      text-decoration: none;
-      font-size: 0.9rem;
-      transition: background-color 0.2s ease;
-    }
-
-    .dropdown-menu a:hover {
-      background-color: var(--accent-weak);
-      color: var(--accent);
-    }
-
-    /* Featured post styles */
-    .featured {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 1rem 1.25rem;
-      margin-bottom: 2rem;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-      transition: box-shadow 0.3s ease;
-    }
-    .featured:hover {
-      box-shadow: 0 4px 16px rgba(0,0,0,0.1);
-    }
-    .featured h2 {
-      margin-top: 0;
-      font-size: 1.5rem;
-      color: var(--accent);
-    }
-    .featured p {
-      color: var(--muted);
-      margin-bottom: 1rem;
-    }
-    .featured a.btn {
-      padding: 0.5rem 1rem;
-      font-weight: 600;
-    }
-
-    /* Animation for dropdown */
-    @keyframes fadeInDown {
-      from {
-        opacity: 0;
-        transform: translateY(-10px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
   </style>
 </head>
 
@@ -153,13 +66,15 @@
       <!-- NAVIGATION -->
       <nav id="mainNav" class="top-nav" aria-label="Primary">
         <a href="./">Home</a>
+
         <div class="dropdown">
-          <a href="#" 
-   class="dropdown-toggle" 
-   id="libraryToggle" 
-   aria-expanded="false">
-   Library
-</a>
+          <button
+            class="dropdown-toggle"
+            id="libraryToggle"
+            aria-expanded="false"
+            type="button">
+            Library
+          </button>
 
           <div class="dropdown-menu" id="libraryMenu">
             <a href="#">Networking Basics</a>
@@ -169,6 +84,7 @@
             <a href="#">Hardware Repairs</a>
           </div>
         </div>
+
         <a href="post.html?slug=about">About</a>
         <button id="themeToggle" class="btn ghost" aria-label="Toggle dark mode">☾</button>
       </nav>
@@ -189,9 +105,7 @@
     </section>
 
     <!-- Featured Post Section -->
-    <section id="featuredPost" class="featured hidden" aria-label="Featured post">
-      <!-- Featured post will be injected here -->
-    </section>
+    <section id="featuredPost" class="featured hidden" aria-label="Featured post"></section>
 
     <section id="postsList" class="posts-list" aria-live="polite" aria-busy="false"></section>
     <div id="emptyState" class="empty hidden">No posts match your search.</div>
@@ -288,13 +202,12 @@
       postsListEl.setAttribute('aria-busy', 'false');
     }
 
-    // Renders the featured post (first post in ALL_POSTS)
     function renderFeaturedPost(posts) {
       if (!posts.length) {
         featuredPostEl.classList.add('hidden');
         return;
       }
-      const featured = posts[0]; // you can customize this to pick any post you want
+      const featured = posts[0];
       featuredPostEl.innerHTML = `
         <h2>🔥 Featured Post</h2>
         <h3><a href="post.html?slug=${encodeURIComponent(featured.slug)}">${featured.title}</a></h3>
@@ -353,30 +266,26 @@
     });
 
     /* --- LIBRARY DROPDOWN --- */
-const libraryToggle = document.getElementById('libraryToggle');
-const libraryMenu = document.getElementById('libraryMenu');
+    const libraryToggle = document.getElementById('libraryToggle');
+    const libraryMenu = document.getElementById('libraryMenu');
 
-if (libraryToggle && libraryMenu) {
-  libraryToggle.addEventListener('click', function(e) {
-    e.preventDefault();
+    if (libraryToggle && libraryMenu) {
+      libraryToggle.addEventListener('click', function(e) {
+        e.preventDefault();
+        const isExpanded = libraryToggle.getAttribute('aria-expanded') === 'true';
+        libraryToggle.setAttribute('aria-expanded', !isExpanded);
+        libraryMenu.classList.toggle('show');
+      });
 
-    const isExpanded = libraryToggle.getAttribute('aria-expanded') === 'true';
-    libraryToggle.setAttribute('aria-expanded', !isExpanded);
-
-    libraryMenu.classList.toggle('show');
-  });
-
-  document.addEventListener('click', function(e) {
-    if (!libraryToggle.contains(e.target) && !libraryMenu.contains(e.target)) {
-      libraryMenu.classList.remove('show');
-      libraryToggle.setAttribute('aria-expanded', 'false');
+      document.addEventListener('click', function(e) {
+        if (!libraryToggle.contains(e.target) && !libraryMenu.contains(e.target)) {
+          libraryMenu.classList.remove('show');
+          libraryToggle.setAttribute('aria-expanded', 'false');
+        }
+      });
     }
-  });
-}
 
     (function seasonalEffects(){ /* ... your existing implementation ... */ })();
   </script>
 </body>
 </html>
-
-
