@@ -44,6 +44,93 @@
         display: flex;
       }
     }
+
+    /* Dropdown styles */
+    .dropdown {
+      position: relative;
+      display: inline-block;
+    }
+
+    .dropdown-toggle {
+      cursor: pointer;
+      color: var(--fg);
+      text-decoration: none;
+      padding: 0.25rem 0.5rem;
+      font-weight: 500;
+      user-select: none;
+    }
+
+    .dropdown-menu {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+      min-width: 180px;
+      box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+      z-index: 20;
+      padding: 0.25rem 0;
+    }
+
+    .dropdown-menu.show {
+      display: block;
+      animation: fadeInDown 200ms ease forwards;
+    }
+
+    .dropdown-menu a {
+      display: block;
+      padding: 0.5rem 1rem;
+      color: var(--fg);
+      text-decoration: none;
+      font-size: 0.9rem;
+      transition: background-color 0.2s ease;
+    }
+
+    .dropdown-menu a:hover {
+      background-color: var(--accent-weak);
+      color: var(--accent);
+    }
+
+    /* Featured post styles */
+    .featured {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1rem 1.25rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      transition: box-shadow 0.3s ease;
+    }
+    .featured:hover {
+      box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+    }
+    .featured h2 {
+      margin-top: 0;
+      font-size: 1.5rem;
+      color: var(--accent);
+    }
+    .featured p {
+      color: var(--muted);
+      margin-bottom: 1rem;
+    }
+    .featured a.btn {
+      padding: 0.5rem 1rem;
+      font-weight: 600;
+    }
+
+    /* Animation for dropdown */
+    @keyframes fadeInDown {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
   </style>
 </head>
 
@@ -67,16 +154,16 @@
       <nav id="mainNav" class="top-nav" aria-label="Primary">
         <a href="./">Home</a>
         <div class="dropdown">
-<a href="#" class="dropdown-toggle" id="libraryToggle">Library</a>
+          <a href="#" class="dropdown-toggle" id="libraryToggle">Library</a>
 
-  <div class="dropdown-menu">
-    <a href="#">Networking Basics</a>
-    <a href="#">Windows Fixes</a>
-    <a href="#">Printer Troubleshooting</a>
-    <a href="#">Security Tips</a>
-    <a href="#">Hardware Repairs</a>
-  </div>
-</div>
+          <div class="dropdown-menu" id="libraryMenu">
+            <a href="#">Networking Basics</a>
+            <a href="#">Windows Fixes</a>
+            <a href="#">Printer Troubleshooting</a>
+            <a href="#">Security Tips</a>
+            <a href="#">Hardware Repairs</a>
+          </div>
+        </div>
         <a href="post.html?slug=about">About</a>
         <button id="themeToggle" class="btn ghost" aria-label="Toggle dark mode">☾</button>
       </nav>
@@ -95,9 +182,12 @@
         <div id="tags" class="tags" aria-label="Filter by tag"></div>
       </form>
     </section>
-    <section id="featuredPost" class="featured hidden">
-  <!-- Featured post will be injected here -->
-</section>
+
+    <!-- Featured Post Section -->
+    <section id="featuredPost" class="featured hidden" aria-label="Featured post">
+      <!-- Featured post will be injected here -->
+    </section>
+
     <section id="postsList" class="posts-list" aria-live="polite" aria-busy="false"></section>
     <div id="emptyState" class="empty hidden">No posts match your search.</div>
   </main>
@@ -139,6 +229,7 @@
     const emptyStateEl = document.getElementById('emptyState');
     const tagsEl = document.getElementById('tags');
     const searchInput = document.getElementById('searchInput');
+    const featuredPostEl = document.getElementById('featuredPost');
 
     let ALL_POSTS = [];
     let activeTag = null;
@@ -192,6 +283,22 @@
       postsListEl.setAttribute('aria-busy', 'false');
     }
 
+    // Renders the featured post (first post in ALL_POSTS)
+    function renderFeaturedPost(posts) {
+      if (!posts.length) {
+        featuredPostEl.classList.add('hidden');
+        return;
+      }
+      const featured = posts[0]; // you can customize this to pick any post you want
+      featuredPostEl.innerHTML = `
+        <h2>🔥 Featured Post</h2>
+        <h3><a href="post.html?slug=${encodeURIComponent(featured.slug)}">${featured.title}</a></h3>
+        <p>${featured.excerpt}</p>
+        <a href="post.html?slug=${encodeURIComponent(featured.slug)}" class="btn">Read More</a>
+      `;
+      featuredPostEl.classList.remove('hidden');
+    }
+
     tagsEl.addEventListener('click', (e) => {
       const tag = e.target.closest('[data-tag]');
       if (!tag) return;
@@ -212,6 +319,7 @@
         ALL_POSTS = await res.json();
         ALL_POSTS.sort((a, b) => new Date(b.date) - new Date(a.date));
         renderTags(ALL_POSTS);
+        renderFeaturedPost(ALL_POSTS);
         filterPosts();
       } catch (err) {
         postsListEl.innerHTML = `<p class="error">Could not load posts. Check <code>assets/posts.json</code>.</p>`;
@@ -239,31 +347,24 @@
       menuToggle.textContent = isOpen ? '✕' : '☰';
     });
 
-    (function seasonalEffects(){ /* ... your existing implementation ... */ })();
-    
     /* --- LIBRARY DROPDOWN --- */
-const libraryToggle = document.getElementById('libraryToggle');
-const libraryMenu = document.getElementById('libraryMenu');
+    const libraryToggle = document.getElementById('libraryToggle');
+    const libraryMenu = document.getElementById('libraryMenu');
 
-if (libraryToggle && libraryMenu) {
-  libraryToggle.addEventListener('click', function(e) {
-    e.preventDefault();
-    libraryMenu.classList.toggle('show');
-  });
+    if (libraryToggle && libraryMenu) {
+      libraryToggle.addEventListener('click', function(e) {
+        e.preventDefault();
+        libraryMenu.classList.toggle('show');
+      });
 
-  document.addEventListener('click', function(e) {
-    if (!libraryToggle.contains(e.target) && !libraryMenu.contains(e.target)) {
-      libraryMenu.classList.remove('show');
+      document.addEventListener('click', function(e) {
+        if (!libraryToggle.contains(e.target) && !libraryMenu.contains(e.target)) {
+          libraryMenu.classList.remove('show');
+        }
+      });
     }
-  });
-}
+
+    (function seasonalEffects(){ /* ... your existing implementation ... */ })();
   </script>
 </body>
 </html>
-
-
-
-
-
-
-
