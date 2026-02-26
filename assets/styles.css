@@ -370,3 +370,48 @@ body.is-exiting {
   transform: translateY(0);
   pointer-events: auto;
 }
+/* ============================================================
+   FEATURED POST
+   ============================================================ */
+
+.featured {
+  margin: 1.5rem 0 1rem;
+  padding: 1.5rem;
+  border-radius: 18px;
+  background: linear-gradient(
+    135deg,
+    var(--accent-weak),
+    transparent 60%
+  );
+  border: 1px solid var(--border);
+  position: relative;
+  overflow: hidden;
+}
+
+.featured::before {
+  content: "FEATURED";
+  position: absolute;
+  top: 14px;
+  right: 18px;
+  font-size: .7rem;
+  letter-spacing: 1.5px;
+  font-weight: 700;
+  color: var(--accent);
+  opacity: .7;
+}
+
+.featured h2 {
+  margin: .3rem 0 .6rem;
+  font-size: 1.6rem;
+}
+
+.featured p {
+  color: var(--muted);
+  margin-bottom: 1rem;
+}
+
+.featured .btn {
+  font-size: 1rem;
+  padding: .6rem 1rem;
+}
+
