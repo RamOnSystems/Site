@@ -18,7 +18,7 @@
   <meta name="msapplication-TileColor" content="#2563eb">
 
   <style>
-    /* --- MOBILE MENU TOGGLE --- */
+    /* ====== MOBILE MENU TOGGLE ====== */
     .menu-toggle {
       display: none;
       background: none;
@@ -43,7 +43,140 @@
       .top-nav.open {
         display: flex;
       }
+
+      /* On mobile, dropdown menu should be static */
+      .dropdown-menu {
+        position: static;
+        display: none;
+        opacity: 1;
+        transform: none;
+        box-shadow: none;
+        border: none;
+        background: transparent;
+        padding: .3rem 0 .3rem 1rem;
+      }
+
+      .dropdown-menu.show {
+        display: block;
+      }
+
+      .dropdown-menu a {
+        padding: .5rem 0;
+      }
     }
+
+    /* ====== DROPDOWN ====== */
+    .dropdown {
+      position: relative;
+      display: inline-block;
+    }
+
+    .dropdown-toggle {
+      cursor: pointer;
+      color: var(--fg);
+      text-decoration: none;
+      padding: 0.25rem 0.5rem;
+      font-weight: 500;
+      user-select: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    /* Small arrow indicator */
+    .dropdown-toggle::after {
+      content: "▾";
+      font-size: 0.7rem;
+      opacity: .7;
+      transition: transform 200ms ease;
+    }
+
+    .dropdown-menu {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      min-width: 180px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+      box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+      z-index: 20;
+      padding: 0.25rem 0;
+      opacity: 0;
+      transform: translateY(10px) scale(.98);
+      pointer-events: none;
+      transition: opacity 180ms ease, transform 180ms cubic-bezier(.2,.7,.2,1);
+    }
+
+    .dropdown-menu a {
+      display: block;
+      padding: 0.5rem 1rem;
+      color: var(--fg);
+      text-decoration: none;
+      font-size: 0.9rem;
+      transition: background-color 0.2s ease, padding-left 0.2s ease;
+    }
+
+    .dropdown-menu a:hover {
+      background-color: var(--accent-weak);
+      color: var(--accent);
+      padding-left: 1.2rem;
+    }
+
+    /* Hover for desktop */
+    @media (hover: hover) and (pointer: fine) {
+      .dropdown:hover > .dropdown-menu {
+        display: block;
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        pointer-events: auto;
+      }
+
+      .dropdown:hover > .dropdown-toggle::after {
+        transform: rotate(180deg);
+      }
+    }
+
+    /* ====== FEATURED POST ====== */
+    .featured {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1rem 1.25rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      transition: box-shadow 0.3s ease, transform 0.3s ease;
+    }
+    .featured:hover {
+      box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+      transform: translateY(-2px);
+    }
+    .featured h2 {
+      margin-top: 0;
+      font-size: 1.5rem;
+      color: var(--accent);
+    }
+    .featured p {
+      color: var(--muted);
+      margin-bottom: 1rem;
+    }
+    .featured a.btn {
+      padding: 0.5rem 1rem;
+      font-weight: 600;
+    }
+
+    /* Animation for dropdown */
+    @keyframes fadeInDown {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
   </style>
 </head>
 
@@ -66,15 +199,13 @@
       <!-- NAVIGATION -->
       <nav id="mainNav" class="top-nav" aria-label="Primary">
         <a href="./">Home</a>
-
         <div class="dropdown">
-          <button
-            class="dropdown-toggle"
-            id="libraryToggle"
-            aria-expanded="false"
-            type="button">
+          <a href="#" 
+             class="dropdown-toggle" 
+             id="libraryToggle" 
+             aria-expanded="false">
             Library
-          </button>
+          </a>
 
           <div class="dropdown-menu" id="libraryMenu">
             <a href="#">Networking Basics</a>
@@ -84,7 +215,6 @@
             <a href="#">Hardware Repairs</a>
           </div>
         </div>
-
         <a href="post.html?slug=about">About</a>
         <button id="themeToggle" class="btn ghost" aria-label="Toggle dark mode">☾</button>
       </nav>
@@ -246,16 +376,7 @@
     }
     init();
 
-    document.addEventListener('click', (e) => {
-      const a = e.target.closest('a[href]');
-      if (!a) return;
-      const url = new URL(a.href, location.href);
-      if (url.origin === location.origin) {
-        document.body.classList.add('is-exiting');
-      }
-    });
-
-    /* --- MOBILE MENU TOGGLE JS --- */
+    /* --- MOBILE MENU --- */
     const menuToggle = document.getElementById('menuToggle');
     const mainNav = document.getElementById('mainNav');
 
@@ -265,7 +386,7 @@
       menuToggle.textContent = isOpen ? '✕' : '☰';
     });
 
-    /* --- LIBRARY DROPDOWN --- */
+    /* --- LIBRARY DROPDOWN CLICK --- */
     const libraryToggle = document.getElementById('libraryToggle');
     const libraryMenu = document.getElementById('libraryMenu');
 
@@ -285,7 +406,6 @@
       });
     }
 
-    (function seasonalEffects(){ /* ... your existing implementation ... */ })();
   </script>
 </body>
 </html>
