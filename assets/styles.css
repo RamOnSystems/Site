@@ -325,3 +325,90 @@ body.is-exiting {
     transition: none !important;
   }
 }
+/* ============================================================
+   LIBRARY PAGE STYLES
+   ============================================================ */
+
+/* Library menu */
+.library-menu {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.5rem;
+  padding: 0.5rem 0;
+}
+
+.library-menu a {
+  padding: 0.4rem 0.9rem;
+  background: var(--card);
+  border-radius: 8px;
+  text-decoration: none;
+  color: var(--fg);
+  font-size: 0.95rem;
+  transition: 0.25s ease;
+  border: 1px solid var(--border);
+}
+
+.library-menu a:hover {
+  transform: translateY(-3px);
+  background: var(--accent);
+  color: white;
+  box-shadow: 0 6px 15px rgba(0,0,0,0.25);
+}
+
+.library-menu a.active {
+  background: var(--accent);
+  color: white;
+}
+
+/* Library grid */
+.library-grid {
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  margin-top: 1rem;
+}
+
+/* Library cards */
+.lib-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.5rem;
+  text-align: center;
+  cursor: pointer;
+  transition: 0.25s ease;
+}
+
+.lib-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+}
+
+.lib-card .icon {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+  transition: 0.3s ease;
+}
+
+.lib-card:hover .icon {
+  transform: scale(1.2) rotate(5deg);
+}
+
+/* ACTIVE STATE (jouw code) */
+.lib-card.active {
+  outline: 2px solid var(--accent);
+  transform: translateY(-6px) scale(1.03);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+}
+
+/* Library content box */
+.library-content {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background: var(--card);
+  border-radius: 12px;
+  border: 1px solid var(--border);
+}
+
+
